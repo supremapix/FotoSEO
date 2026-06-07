@@ -243,6 +243,7 @@ function StatCounter({ value, duration = 1500 }: StatCounterProps) {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
   const [hasStarted, setHasStarted] = useState(false);
+  const [loopTrigger, setLoopTrigger] = useState(0);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -271,6 +272,8 @@ function StatCounter({ value, duration = 1500 }: StatCounterProps) {
     const targetValue = parseInt(match[0], 10);
 
     let startTime: number | null = null;
+    let animationFrameId: number;
+    let timeoutId: any;
 
     const animate = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
@@ -284,14 +287,24 @@ function StatCounter({ value, duration = 1500 }: StatCounterProps) {
       setCount(currentCount);
 
       if (progressRatio < 1) {
-        requestAnimationFrame(animate);
+        animationFrameId = requestAnimationFrame(animate);
       } else {
         setCount(targetValue);
+        // Wait 3.5 seconds at the target value, then reset and count up again
+        timeoutId = setTimeout(() => {
+          setCount(0);
+          setLoopTrigger((prev) => prev + 1);
+        }, 3500);
       }
     };
 
-    requestAnimationFrame(animate);
-  }, [hasStarted, value, duration]);
+    animationFrameId = requestAnimationFrame(animate);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [hasStarted, value, duration, loopTrigger]);
 
   // Substitute numerical portion with animated count state
   const finalValue = value.replace(/\d+/, count.toString());
@@ -455,6 +468,76 @@ function ActiveViewersCounter() {
 }
 
 // ==========================================
+// FLOATING WATERMARK ALERTS SYSTEM
+// ==========================================
+function FloatingWatermarkAlerts() {
+  const [activeAlert, setActiveAlert] = useState(0); // 0 = Viewers, 1 = Countdown, 2 = spots left, 3 = senior-friendly proof
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsVisible(false);
+
+      const timer = setTimeout(() => {
+        setActiveAlert((prev) => (prev + 1) % 4);
+        setIsVisible(true);
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }, 9000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div
+      className={`fixed left-4 bottom-28 md:bottom-auto md:top-1/3 -translate-y-1/2 z-40 flex flex-col gap-2.5 pointer-events-auto max-w-[310px] select-none transition-all duration-1000 ${
+        isVisible ? 'opacity-[0.65] translate-x-0' : 'opacity-0 -translate-x-12'
+      } hover:opacity-100 focus-within:opacity-100 scale-85 sm:scale-100 origin-left`}
+    >
+      <div className="flex items-center gap-1.5 px-3 py-1 bg-black/60 backdrop-blur-md rounded-full border border-white/5 w-fit">
+        <span className="w-1.5 h-1.5 rounded-full bg-[#ffd200] animate-pulse" />
+        <span className="text-[9px] font-bold uppercase tracking-widest text-[#ffd200]/40 hover:text-[#ffd200] transition-colors">
+          Alerta de Escassez em Tempo Real
+        </span>
+      </div>
+
+      {activeAlert === 0 && (
+        <ActiveViewersCounter />
+      )}
+
+      {activeAlert === 1 && (
+        <CountdownTimer />
+      )}
+
+      {activeAlert === 2 && (
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/20 rounded-full text-white text-[12px] font-semibold shadow-md">
+          <span className="relative flex h-2 w-2 shrink-0">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+          </span>
+          <span className="text-zinc-200">
+            Apenas <strong className="text-[#ffd200]">7 licenças vitais</strong> com desconto hoje!
+          </span>
+        </div>
+      )}
+
+      {activeAlert === 3 && (
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-white text-[11px] font-semibold shadow-md">
+          <span className="relative flex h-2 w-2 shrink-0">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span className="text-zinc-200">
+            Mais de <strong className="text-emerald-400">1.430 idosos</strong> usando sem dificuldades!
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ==========================================
 // MAIN REVOLUTIONARY FOTOSEO APPLICATION
 // ==========================================
 export default function App() {
@@ -572,10 +655,10 @@ export default function App() {
 
   // Static Data lists structure mapping
   const stats = [
-    { value: '10×', label: 'Mais visitas locais vindas do Google Meu Negócio' },
-    { value: '10', label: 'Fotos prontas juntas de uma única vez em poucos cliques' },
-    { value: '100%', label: 'Funciona na Internet, sem precisar instalar nenhum programa' },
-    { value: '3 min', label: 'Minutos para deixar todas as fotos perfeitas' },
+    { value: '10×', label: 'Mais pessoas do seu próprio bairro encontrando a sua empresa no mapa e ligando para você.' },
+    { value: '10', label: 'Fotos enviadas de uma única vez, de forma simples e sem qualquer tipo de complicação.' },
+    { value: '100%', label: 'Funciona online e direto pelo seu navegador de internet, sem precisar baixar nenhum aplicativo.' },
+    { value: '3 min', label: 'Apenas 3 minutos do seu dia bastam para que nosso sistema faça tudo sozinho por você.' },
   ];
 
   const painPoints = [
@@ -909,7 +992,7 @@ export default function App() {
 
               {/* Body message */}
               <p
-                className="animate-fade-up text-[16px] md:text-[17px] font-medium tracking-[0.025em] leading-[1.55] text-zinc-200 mb-10 text-justify"
+                className="animate-fade-up text-[16px] md:text-[17px] font-medium tracking-[0.025em] leading-[1.55] text-zinc-200 mb-10 text-center md:text-justify"
                 style={{ animationDelay: '400ms' }}
               >
                 O FotoSEO é a ferramenta definitiva para colocar qualquer negócio no topo do Google Maps. Sem precisar programar ou saber nada de computação, ele injeta as coordenadas de GPS reais do seu endereço e palavras-chave secretas diretamente nos arquivos das suas fotos. O Google reconhece que a sua foto foi tirada exatamente no seu local de atendimento, validando a relevância do seu perfil e alavancando a sua empresa para a Posição #1 dos mapas em poucos minutos!
@@ -940,23 +1023,26 @@ export default function App() {
       </section>
 
       {/* STATS SECTION */}
-      <section className="bg-black py-20 border-t border-white/8 border-b z-10 relative">
+      <section className="bg-black py-24 border-t border-white/8 border-b z-10 relative">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 md:gap-0">
             {stats.map((stat, idx) => (
               <ScrollReveal
                 key={idx}
                 delay={idx * 100}
-                className={`flex flex-col p-6 md:px-8 ${
+                className={`flex flex-col p-6 md:px-10 ${
                   idx !== 0 ? 'md:border-l border-white/8' : ''
                 }`}
               >
-                <div className="text-white font-[200] text-[46px] md:text-[52px] tracking-[-0.04em] leading-none mb-3">
+                <div className="text-[#ffd200] font-[900] text-[58px] md:text-[68px] tracking-[-0.04em] leading-none mb-4 animate-pulse">
                   <StatCounter value={stat.value} />
                 </div>
-                <div className="text-zinc-400 text-[14px] font-normal leading-relaxed tracking-wide">
+                <div className="text-zinc-100 text-[16px] font-semibold leading-relaxed tracking-wide">
                   {stat.label}
                 </div>
+                <span className="text-[11px] font-mono font-bold uppercase text-zinc-500 tracking-widest mt-3">
+                  ✓ Verificado em tempo real
+                </span>
               </ScrollReveal>
             ))}
           </div>
@@ -1931,11 +2017,28 @@ export default function App() {
         </div>
       </footer>
 
-      {/* Floating Transparent Watermark on Left Side (Scarcity & Live Views) */}
+      {/* Floating Dynamic Watermark on Left Side (Cycled Social Proof Alerts) */}
       {currentView === 'landing' && (
-        <div className="fixed left-4 bottom-24 md:bottom-auto md:top-1/3 -translate-y-1/2 z-40 flex flex-col gap-3.5 pointer-events-auto max-w-[280px] opacity-[0.22] hover:opacity-100 focus-within:opacity-100 transition-opacity duration-500 scale-90 sm:scale-100 origin-left select-none">
-          <ActiveViewersCounter />
-          <CountdownTimer />
+        <FloatingWatermarkAlerts />
+      )}
+
+      {/* Sticky Bottom CTA Bar for Mobile (High Conversion Asset) */}
+      {showScrollTop && currentView === 'landing' && (
+        <div className="fixed bottom-0 left-0 right-0 z-45 bg-black/95 backdrop-blur-xl border-t border-white/10 px-5 py-3 md:hidden flex items-center justify-between gap-4 animate-fade-in shadow-2xl">
+          <div className="flex flex-col">
+            <span className="text-[10px] text-zinc-400 uppercase tracking-widest font-extrabold">Acesso Vitalício</span>
+            <div className="flex items-baseline gap-1">
+              <span className="text-zinc-500 line-through text-[11px]">R$ 197</span>
+              <span className="text-[#ffd200] font-[900] text-[18px]">R$ 97</span>
+            </div>
+          </div>
+          <button
+            onClick={triggerPurchase}
+            className="flex-1 max-w-[210px] h-[48px] bg-[#ffd200] active:bg-[#ffe14f] text-black font-extrabold uppercase text-[12px] tracking-wider rounded-full shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+          >
+            <span>Garantir Desconto</span>
+            <ArrowRight className="w-3.5 h-3.5 stroke-[3]" />
+          </button>
         </div>
       )}
 
@@ -1943,7 +2046,9 @@ export default function App() {
       {showScrollTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-6 right-6 z-50 p-4 cursor-pointer rounded-full bg-[#ffd200] hover:bg-[#ffe14f] text-black shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 group font-bold uppercase tracking-wider text-[11px]"
+          className={`fixed right-6 z-50 p-4 cursor-pointer rounded-full bg-[#ffd200] hover:bg-[#ffe14f] text-black shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 group font-bold uppercase tracking-wider text-[11px] ${
+            currentView === 'landing' ? 'bottom-24 md:bottom-6' : 'bottom-6'
+          }`}
           title="Voltar ao topo"
         >
           <span className="hidden sm:inline">Voltar ao topo</span>
