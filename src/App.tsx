@@ -416,6 +416,44 @@ function CountdownTimer() {
 }
 
 // ==========================================
+// DYNAMIC LIVE ACTIVE VIEWERS COUNTER (SOCIAL PROOF)
+// ==========================================
+function ActiveViewersCounter() {
+  const sequence = [5, 22, 11, 8];
+  const [index, setIndex] = useState(0);
+  const [loopCount, setLoopCount] = useState(0);
+
+  useEffect(() => {
+    if (loopCount >= 4) return;
+
+    const timer = setTimeout(() => {
+      setIndex((prevIndex) => {
+        const nextIndex = prevIndex + 1;
+        if (nextIndex >= sequence.length) {
+          setLoopCount((prevCount) => prevCount + 1);
+          return 0;
+        }
+        return nextIndex;
+      });
+    }, 15000); // 15 seconds interval
+
+    return () => clearTimeout(timer);
+  }, [index, loopCount]);
+
+  const viewersCount = sequence[index];
+
+  return (
+    <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/25 rounded-full text-white text-[12px] font-semibold animate-pulse shadow-md transition-all duration-300">
+      <span className="relative flex h-2 w-2 shrink-0">
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+        <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+      </span>
+      <span>{viewersCount} pessoas qualificadas vendo esta página agora</span>
+    </div>
+  );
+}
+
+// ==========================================
 // MAIN REVOLUTIONARY FOTOSEO APPLICATION
 // ==========================================
 export default function App() {
@@ -424,13 +462,50 @@ export default function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // New states for the multi-stage marketing funnel
-  const [currentView, setCurrentView] = useState<'landing' | 'upsell' | 'success'>('landing');
+  const [currentView, setCurrentView] = useState<'landing' | 'upsell' | 'downsell' | 'success'>('landing');
   const [upsellIncluded, setUpsellIncluded] = useState<boolean | null>(null);
+  const [downsellActive, setDownsellActive] = useState<boolean>(false);
+
+  const navigateTo = (view: 'landing' | 'upsell' | 'downsell' | 'success') => {
+    setCurrentView(view);
+    const newPath = view === 'landing' ? '/' : `/${view}`;
+    window.history.pushState({ view }, '', newPath);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Back button configuration & Pathname routing tracking on first mount
+  useEffect(() => {
+    const checkPath = () => {
+      const path = window.location.pathname;
+      if (path === '/downsell') {
+        setCurrentView('downsell');
+      } else if (path === '/upsell') {
+        setCurrentView('upsell');
+      } else if (path === '/success') {
+        setCurrentView('success');
+      } else {
+        setCurrentView('landing');
+      }
+    };
+
+    checkPath();
+
+    const handlePopState = (event: PopStateEvent) => {
+      if (event.state && event.state.view) {
+        setCurrentView(event.state.view);
+      } else {
+        checkPath();
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   const handleNavClick = (sectionId: string) => {
     setIsMobileMenuOpen(false);
     if (currentView !== 'landing') {
-      setCurrentView('landing');
+      navigateTo('landing');
       setTimeout(() => {
         const element = document.getElementById(sectionId);
         if (element) {
@@ -445,8 +520,7 @@ export default function App() {
   const triggerPurchase = () => {
     // Open the real secure Kirvano checkout URL in a new window/tab
     window.open('https://pay.kirvano.com/94547bd8-1439-472a-8b54-b50b0389d086', '_blank');
-    setCurrentView('upsell');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigateTo('upsell');
   };
 
   // FAQ accordion active state index tracker
@@ -799,17 +873,23 @@ export default function App() {
         <div className="max-w-7xl mx-auto w-full z-10">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
             {/* Left side text layout: max-width 520px constraint strictly */}
-            <div className="md:col-span-7 xl:col-span-6 max-w-[520px]">
+            <div className="md:col-span-7 xl:col-span-6 max-w-[520px] text-center md:text-left">
               {/* Eyebrow: premium caps tracking typography */}
               <div
-                className="animate-fade-up text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-6"
+                className="animate-fade-up text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4"
                 style={{ animationDelay: '0s' }}
               >
-                Otimização de imagens para Google Maps
+                Otimização inteligente de imagens para Google Maps
+              </div>
+
+              {/* Dynamic live urgency alerts */}
+              <div className="mb-6 flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 animate-fade-up" style={{ animationDelay: '50ms' }}>
+                <ActiveViewersCounter />
+                <CountdownTimer />
               </div>
 
               {/* H1 Headline display splits precisely onto 3 lines */}
-              <h1 className="text-white font-[200] leading-[0.88] tracking-[-0.04em] mb-8 text-[58px] sm:text-[76px] lg:text-[88px]">
+              <h1 className="text-white font-[800] leading-[1.0] tracking-[-0.04em] mb-8 text-[44px] sm:text-[62px] lg:text-[76px] uppercase text-center md:text-left">
                 <span
                   className="block animate-fade-up"
                   style={{ animationDelay: '100ms' }}
@@ -820,28 +900,27 @@ export default function App() {
                   className="block animate-fade-up"
                   style={{ animationDelay: '200ms' }}
                 >
-                  tags e
+                  tags e metadados
                 </span>
                 <span
-                  className="block animate-fade-up"
+                  className="block animate-fade-up text-plum-voltage font-black"
                   style={{ animationDelay: '300ms' }}
                 >
-                  metadados.
+                  e suba no Maps!
                 </span>
               </h1>
 
               {/* Body message */}
               <p
-                className="animate-fade-up text-[16px] md:text-[17px] font-normal tracking-[0.025em] leading-[1.55] text-zinc-400 mb-10"
+                className="animate-fade-up text-[16px] md:text-[17px] font-medium tracking-[0.025em] leading-[1.55] text-zinc-200 mb-10 text-justify"
                 style={{ animationDelay: '400ms' }}
               >
-                Suba no Google Maps em minutos. GPS automático por endereço. Até 10 fotos de uma vez.
-                Download em ZIP. Sem programação.
+                O FotoSEO é a ferramenta definitiva para colocar qualquer negócio no topo do Google Maps. Sem precisar programar ou saber nada de computação, ele injeta as coordenadas de GPS reais do seu endereço e palavras-chave secretas diretamente nos arquivos das suas fotos. O Google reconhece que a sua foto foi tirada exatamente no seu local de atendimento, validando a relevância do seu perfil e alavancando a sua empresa para a Posição #1 dos mapas em poucos minutos!
               </p>
 
               {/* Action columns buttons stack on mobile, inline on desktop */}
               <div
-                className="animate-fade-up flex flex-col sm:flex-row items-stretch sm:items-center gap-4"
+                className="animate-fade-up flex flex-col sm:flex-row items-stretch sm:items-center justify-center md:justify-start gap-4"
                 style={{ animationDelay: '500ms' }}
               >
                 <RippleButton className="py-[18px] px-8" onClick={triggerPurchase}>
@@ -890,15 +969,15 @@ export default function App() {
       {/* PROBLEMA SECTION (Pain points with subtle red border) */}
       <section className="bg-black py-24 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block">
+          <div className="text-center max-w-2xl mx-auto mb-16 px-4">
+            <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block text-center">
               O Gargalo Invisível
             </span>
-            <h2 className="text-[36px] md:text-[48px] font-[200] text-white tracking-[-0.04em] leading-[1.1] mb-5">
-              Por que suas fotos não ajudam no SEO local?
+            <h2 className="text-[36px] md:text-[48px] font-bold text-white tracking-[-0.03em] leading-[1.1] mb-5 uppercase text-center">
+              Por que suas fotos normais estão matando o seu posicionamento no Google?
             </h2>
-            <p className="text-[#9a9a9a] text-[16px] leading-[1.6]">
-              O robô do Google não consegue enxergar rostos ou fachadas perfeitamente. Ele precisa de dados estruturados dentro dos arquivos das imagens.
+            <p className="text-white/90 font-medium text-[16px] leading-[1.6] text-justify md:text-center">
+              O robô do Google não consegue enxergar rostos ou fachadas perfeitamente. Ele precisa de dados geográficos e tags ocultas codificados dentro de cada arquivo de imagem para comprovar a relevância local.
             </p>
           </div>
 
@@ -912,13 +991,13 @@ export default function App() {
                   className="group relative rounded-[24px] border border-red-500/15 bg-[#000000] p-8 hover:border-red-500/30 transition-all duration-300 transform"
                 >
                   {/* Subtle red indicator */}
-                  <div className="w-12 h-12 rounded-[24px] border border-red-500/20 bg-red-950/10 flex items-center justify-center mb-6">
+                  <div className="w-12 h-12 rounded-[24px] border border-red-500/20 bg-red-950/10 flex items-center justify-center mb-6 mx-auto md:mx-0">
                     <IconComponent className="w-5 h-5 text-red-400" />
                   </div>
-                  <h3 className="text-[20px] font-semibold text-white tracking-tight mb-3">
+                  <h3 className="text-[20px] font-semibold text-white tracking-tight mb-3 text-center md:text-left">
                     {item.title}
                   </h3>
-                  <p className="text-zinc-400 text-[15px] leading-relaxed">
+                  <p className="text-zinc-100 font-medium text-[15px] leading-relaxed text-justify">
                     {item.desc}
                   </p>
                 </ScrollReveal>
@@ -931,12 +1010,12 @@ export default function App() {
       {/* COMO FUNCIONA SECTION */}
       <section id="funcionamento" className="bg-black py-24 border-t border-white/8 relative">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-2xl mx-auto mb-20">
-            <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block">
+          <div className="text-center max-w-2xl mx-auto mb-20 px-4">
+            <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block text-center">
               Praticidade Absoluta
             </span>
-            <h2 className="text-[36px] md:text-[48px] font-[200] text-white tracking-[-0.04em] leading-[1.1]">
-              Três passos simples para o topo
+            <h2 className="text-[36px] md:text-[48px] font-bold text-white tracking-[-0.03em] leading-[1.1] uppercase text-center">
+              A FORMIDÁVEL FÓRMULA DE 3 PASSOS QUE TE COLOCA NA RESPOSTA NÚMERO #1 DO GOOGLE MAPS
             </h2>
           </div>
 
@@ -954,14 +1033,14 @@ export default function App() {
                     {item.num}
                   </div>
 
-                  <div className="w-12 h-12 rounded-[24px] border border-plum-voltage/20 bg-plum-voltage/5 flex items-center justify-center mb-8">
+                  <div className="w-12 h-12 rounded-[24px] border border-plum-voltage/20 bg-plum-voltage/5 flex items-center justify-center mb-8 mx-auto md:mx-0">
                     <IconComponent className="w-5 h-5 text-plum-voltage" />
                   </div>
 
-                  <h3 className="text-[20px] font-semibold text-white tracking-tight mb-3">
+                  <h3 className="text-[20px] font-semibold text-white tracking-tight mb-3 text-center md:text-left">
                     {item.title}
                   </h3>
-                  <p className="text-zinc-400 text-[15px] leading-relaxed">
+                  <p className="text-zinc-100 font-medium text-[15px] leading-relaxed text-justify">
                     {item.desc}
                   </p>
 
@@ -977,12 +1056,12 @@ export default function App() {
       {/* RECURSOS PANEL (Grid 3x3 with lichen icon colors) */}
       <section id="recursos" className="bg-black py-24 border-t border-white/8 relative">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-2xl mx-auto mb-20">
-            <span className="text-[12px] font-semibold tracking-[0.025em] uppercase text-plum-voltage mb-4 block">
+          <div className="text-center max-w-2xl mx-auto mb-20 px-4">
+            <span className="text-[12px] font-semibold tracking-[0.025em] uppercase text-plum-voltage mb-4 block text-center">
               Poder de Fogo Completo
             </span>
-            <h2 className="text-[36px] md:text-[48px] font-[200] text-white tracking-[-0.04em] leading-[1.1]">
-              Funcionalidades desenhadas para Ranqueamento Local
+            <h2 className="text-[36px] md:text-[48px] font-bold text-white tracking-[-0.03em] leading-[1.1] uppercase text-center">
+              Poder de fogo supremo para esmagar seus concorrentes locais
             </h2>
           </div>
 
@@ -995,14 +1074,14 @@ export default function App() {
                   delay={(idx % 3) * 100}
                   className="group relative rounded-[24px] border border-white/8 bg-[#000000] p-8 hover:border-plum-voltage/40 hover:-translate-y-2.5 transition-all duration-300"
                 >
-                  <div className="w-12 h-12 rounded-[24px] border border-lichen/20 bg-lichen/5 flex items-center justify-center mb-6">
+                  <div className="w-12 h-12 rounded-[24px] border border-lichen/20 bg-lichen/5 flex items-center justify-center mb-6 mx-auto md:mx-0">
                     <IconComponent className="w-5 h-5 text-lichen" />
                   </div>
 
-                  <h3 className="text-[18px] font-semibold text-white tracking-tight mb-2">
+                  <h3 className="text-[18px] font-semibold text-white tracking-tight mb-2 text-center md:text-left">
                     {item.title}
                   </h3>
-                  <p className="text-[#9a9a9a] text-[14px] leading-relaxed">
+                  <p className="text-zinc-100 font-medium text-[14px] leading-relaxed text-justify">
                     {item.desc}
                   </p>
 
@@ -1017,15 +1096,15 @@ export default function App() {
       {/* COMPARAÇÃO SECTION (Detailed visual board) */}
       <section className="bg-black py-24 border-t border-white/8 relative">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-2xl mx-auto mb-20">
-            <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block">
+          <div className="text-center max-w-2xl mx-auto mb-20 px-4">
+            <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block text-center">
               Comparativo Técnico
             </span>
-            <h2 className="text-[36px] md:text-[48px] font-[200] text-white tracking-[-0.04em] leading-[1.1] mb-5">
-              Por que alternar para o FotoSEO?
+            <h2 className="text-[36px] md:text-[48px] font-bold text-white tracking-[-0.03em] leading-[1.1] mb-5 uppercase text-center">
+              O ABISMO DE DIFERENÇA ENTRE QUEM VENDE MUITO E QUEM CONTINUA INVISÍVEL
             </h2>
-            <p className="text-zinc-400 text-[15px]">
-              Veja a diferença marcante entre trabalhar de forma intuitiva versus usar metadados geo-estruturados de excelência.
+            <p className="text-white/95 font-[500] text-[15px] text-justify md:text-center">
+              Veja a diferença marcante entre trabalhar de forma amadora versus injetar metadados geo-estruturados de extrema relevância local.
             </p>
           </div>
 
@@ -1034,13 +1113,13 @@ export default function App() {
             <table className="w-full text-left border-collapse min-w-[700px]">
               <thead>
                 <tr className="border-b border-white/8 bg-white/[0.02]">
-                  <th className="p-6 text-[13px] font-semibold uppercase tracking-wider text-[#9a9a9a] w-[30%]">
+                  <th className="p-6 text-[13px] font-bold uppercase tracking-wider text-white w-[30%]">
                     Situação
                   </th>
-                  <th className="p-6 text-[13px] font-semibold uppercase tracking-wider text-red-400 w-[35%] border-l border-white/8">
+                  <th className="p-6 text-[13px] font-bold uppercase tracking-wider text-red-300 w-[35%] border-l border-white/8">
                     Sem FotoSEO
                   </th>
-                  <th className="p-6 text-[13px] font-semibold uppercase tracking-wider text-plum-voltage w-[35%] border-l border-white/8">
+                  <th className="p-6 text-[13px] font-bold uppercase tracking-wider text-plum-voltage w-[35%] border-l border-white/8">
                     Com FotoSEO
                   </th>
                 </tr>
@@ -1056,7 +1135,7 @@ export default function App() {
                     <td className="p-6 text-white text-[15px] font-medium leading-normal">
                       {row.aspect}
                     </td>
-                    <td className="p-6 text-[#9a9a9a] text-[14px] leading-relaxed border-l border-white/8">
+                    <td className="p-6 text-white font-medium text-[14px] leading-relaxed border-l border-white/8">
                       <div className="flex items-start gap-2.5">
                         <X className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                         <span>{row.without}</span>
@@ -1065,7 +1144,7 @@ export default function App() {
                     <td className="p-6 text-white text-[14px] leading-relaxed border-l border-white/8">
                       <div className="flex items-start gap-2.5">
                         <Check className="w-4 h-4 text-plum-voltage shrink-0 mt-0.5" />
-                        <span className="font-medium text-zinc-100">{row.with}</span>
+                        <span className="font-bold text-white">{row.with}</span>
                       </div>
                     </td>
                   </tr>
@@ -1079,12 +1158,12 @@ export default function App() {
       {/* TESTIMONIALS MARQUEE SCREEN SECTION */}
       <section className="bg-black py-24 border-t border-white/8 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 mb-16">
-          <div className="text-center max-w-2xl mx-auto">
-            <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block">
+          <div className="text-center max-w-2xl mx-auto px-4">
+            <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block text-center">
               Sucesso Prático
             </span>
-            <h2 className="text-[36px] md:text-[48px] font-[200] text-white tracking-[-0.04em] leading-[1.1]">
-              Aprovado por profissionais locais
+            <h2 className="text-[36px] md:text-[48px] font-bold text-white tracking-[-0.03em] leading-[1.1] uppercase text-center">
+              RESULTADOS REALMENTE INCRÍVEIS DE QUEM JÁ DOMINOU O GOOGLE MAPS
             </h2>
           </div>
         </div>
@@ -1108,14 +1187,14 @@ export default function App() {
                       <Star key={i} className="w-4 h-4 fill-amber-spark text-amber-spark" />
                     ))}
                   </div>
-                  <p className="text-zinc-300 text-[15px] leading-relaxed italic mb-8">
+                  <p className="text-white text-[15px] leading-relaxed italic mb-8 font-medium text-justify">
                     "{card.text}"
                   </p>
                 </div>
 
                 <div className="border-t border-white/8 pt-5 flex flex-col">
-                  <span className="text-white font-semibold text-[15px]">{card.name}</span>
-                  <span className="text-zinc-500 text-[13px]">{card.role}</span>
+                  <span className="text-white font-bold text-[15px]">{card.name}</span>
+                  <span className="text-white/70 font-medium text-[13px]">{card.role}</span>
                 </div>
               </div>
             ))}
@@ -1126,12 +1205,12 @@ export default function App() {
       {/* PRICING PLANS SECTION */}
       <section id="preco" className="bg-black py-24 border-t border-white/8 relative">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block">
+          <div className="text-center max-w-2xl mx-auto mb-16 px-4">
+            <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block text-center">
               Acesso Imediato
             </span>
-            <h2 className="text-[36px] md:text-[48px] font-[200] text-white tracking-[-0.04em] leading-[1.1] mb-5">
-              Comece a otimizar agora mesmo
+            <h2 className="text-[36px] md:text-[48px] font-bold text-white tracking-[-0.03em] leading-[1.1] mb-5 uppercase text-center">
+              ADQUIRA AGORA O SEU ACESSO VITALÍCIO COM DESCONTO DE LANÇAMENTO EXCLUSIVO
             </h2>
           </div>
 
@@ -1144,14 +1223,14 @@ export default function App() {
               </div>
 
               <div className="mb-6">
-                <span className="text-zinc-500 text-[15px] font-medium block mb-2">Licença Vitalícia</span>
+                <span className="text-white font-bold text-[15px] block mb-2">Licença Vitalícia</span>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-zinc-500 line-through text-[18px]">R$ 197</span>
-                  <span className="text-white font-[200] text-[60px] md:text-[72px] tracking-tight leading-none">
+                  <span className="text-white/60 line-through text-[18px]">R$ 197</span>
+                  <span className="text-white font-[800] text-[60px] md:text-[72px] tracking-tight leading-none">
                     R$ 97
                   </span>
                 </div>
-                <span className="text-zinc-500 text-[12px] uppercase tracking-wider font-semibold block mt-1.5">
+                <span className="text-white font-bold text-[12px] uppercase tracking-wider block mt-1.5">
                   Pagamento único. Sem mensalidades.
                 </span>
               </div>
@@ -1169,7 +1248,7 @@ export default function App() {
                   'Acesso vitalício completo via navegador',
                   'Sem mensalidades, taxas ocultas ou limites de uso',
                 ].map((item, id) => (
-                  <li key={id} className="flex items-start gap-3 text-[14px] text-zinc-300">
+                  <li key={id} className="flex items-start gap-3 text-[14px] text-white font-semibold">
                     <Check className="w-4 h-4 text-plum-voltage shrink-0 mt-0.5" />
                     <span>{item}</span>
                   </li>
@@ -1182,7 +1261,7 @@ export default function App() {
               </RippleButton>
 
               {/* Warrant trust elements */}
-              <div className="flex items-center justify-center gap-2.5 text-[12px] text-zinc-400 font-medium">
+              <div className="flex items-center justify-center gap-2.5 text-[12px] text-white font-medium">
                 <ShieldCheck className="w-4 h-4 text-lichen" />
                 <span>Garantia incondicional de 7 dias com reembolso integral</span>
               </div>
@@ -1194,12 +1273,12 @@ export default function App() {
       {/* FAQ SECTION Accordion */}
       <section id="faq" className="bg-black py-24 border-t border-white/8 relative text-white">
         <div className="max-w-4xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block">
+          <div className="text-center mb-16 px-4">
+            <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block text-center">
               Dúvidas Frequentes
             </span>
-            <h2 className="text-[36px] md:text-[48px] font-[200] text-white tracking-[-0.04em] leading-[1.1]">
-              Respostas diretas e transparentes
+            <h2 className="text-[36px] md:text-[48px] font-bold text-white tracking-[-0.03em] leading-[1.1] uppercase text-center">
+              RESPOSTAS DIRETAS E 100% TRANSPARENTES PARA SUAS DÚVIDAS
             </h2>
           </div>
 
@@ -1231,7 +1310,7 @@ export default function App() {
                     maxHeight: openFaqIndex === idx ? '250px' : '0px',
                   }}
                 >
-                  <div className="p-6 md:p-8 pt-0 border-t border-white/5 text-zinc-400 text-[15px] leading-relaxed leading-[1.6]">
+                  <div className="p-6 md:p-8 pt-0 border-t border-white/5 text-white font-[500] text-[15px] leading-relaxed leading-[1.6] text-justify">
                     {item.answer}
                   </div>
                 </div>
@@ -1245,9 +1324,9 @@ export default function App() {
       <section className="bg-black py-28 border-t border-white/8 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-[42px] sm:text-[58px] lg:text-[76px] font-[200] text-white tracking-[-0.04em] leading-[0.95] mb-10">
-              Sua concorrência <br />
-              já está otimizando.
+            <h2 className="text-[42px] sm:text-[58px] lg:text-[76px] font-[800] text-white tracking-[-0.03em] leading-[0.95] mb-10 uppercase">
+              ENQUANTO VOCÊ PENSA,<br />
+              SEU CONCORRENTE JÁ INJETOU OUTRA FOTO!
             </h2>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
@@ -1258,15 +1337,15 @@ export default function App() {
 
             {/* Shield and security guidelines */}
             <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 border-t border-white/8 pt-8 max-w-lg mx-auto">
-              <div className="flex items-center gap-2 text-[12px] text-zinc-400 uppercase tracking-widest font-semibold">
+              <div className="flex items-center gap-2 text-[12px] text-white uppercase tracking-widest font-semibold">
                 <ShieldCheck className="w-4 h-4 text-lichen" />
                 <span>Compra robusta e blindada</span>
               </div>
-              <div className="flex items-center gap-2 text-[12px] text-zinc-400 uppercase tracking-widest font-semibold">
+              <div className="flex items-center gap-2 text-[12px] text-white uppercase tracking-widest font-semibold">
                 <Zap className="w-4 h-4 text-lichen" />
                 <span>Acesso instantâneo imediato</span>
               </div>
-              <div className="flex items-center gap-2 text-[12px] text-zinc-400 uppercase tracking-widest font-semibold">
+              <div className="flex items-center gap-2 text-[12px] text-white uppercase tracking-widest font-semibold">
                 <Lock className="w-4 h-4 text-lichen" />
                 <span>Ambiente totalmente criptografado</span>
               </div>
@@ -1292,24 +1371,27 @@ export default function App() {
                   <h4 className="text-[13px] font-semibold tracking-[0.05em] uppercase text-[#ffb829]">
                     Oferta de Lançamento Unilateral
                   </h4>
-                  <p className="text-[12.5px] text-zinc-400 mt-1">
+                  <p className="text-[12.5px] text-white font-medium mt-1">
                     Não atualize esta tela. Seu pedido original do FotoSEO Standard está garantido.
                   </p>
                 </div>
               </div>
-              <CountdownTimer />
+              <div className="flex flex-col sm:flex-row items-center gap-3.5">
+                <ActiveViewersCounter />
+                <CountdownTimer />
+              </div>
             </div>
 
             {/* Headline Display */}
-            <div className="text-left mb-16 max-w-4xl">
-              <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block">
+            <div className="text-center md:text-left mb-16 max-w-4xl mx-auto px-4">
+              <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block text-center md:text-left">
                 Upgrade Imediato de Alta Conversão
               </span>
-              <h1 className="text-[42px] sm:text-[62px] lg:text-[78px] font-[200] text-white tracking-[-0.04em] leading-[0.9] mb-6">
-                Domine o Google Maps totalmente e multiplique seu faturamento.
+              <h1 className="text-[42px] sm:text-[62px] lg:text-[78px] font-bold text-white tracking-[-0.04em] leading-[1.0] mb-6 uppercase text-center md:text-left">
+                Domine o Google Maps totalmente e multiplique seu faturamento hoje!
               </h1>
-              <p className="text-[15px] sm:text-[17px] text-zinc-400 leading-[1.6] max-w-2xl font-normal">
-                Deseja acelerar seus resultados? Adicione o <strong className="text-white">FotoSEO Pro Accelerator Suite</strong> por uma fração insignificante do valor avulso e domine o ranking concorrente.
+              <p className="text-[15px] sm:text-[17px] text-white leading-[1.6] max-w-2xl font-bold text-justify md:text-left">
+                Deseja acelerar seus resultados? Adicione o <strong className="text-[#ffd200]">FotoSEO Pro Accelerator Suite</strong> por uma fração insignificante do valor avulso e domine o ranking concorrente.
               </p>
             </div>
 
@@ -1319,7 +1401,7 @@ export default function App() {
               {/* Left Column Checklist details card */}
               <div className="lg:col-span-7 space-y-6">
                 <div className="p-6 md:p-8 rounded-[24px] border border-white/7 bg-[#000000] space-y-6">
-                  <h3 className="text-[18px] font-semibold text-white tracking-tight flex items-center gap-2">
+                  <h3 className="text-[18px] font-semibold text-white tracking-tight flex flex-col md:flex-row items-center md:items-start gap-2 text-center md:text-left">
                     <Sparkles className="w-4.5 h-4.5 text-plum-voltage" />
                     O que você recebe imediatamente ao ativar o Upgrade Pro:
                   </h3>
@@ -1356,15 +1438,15 @@ export default function App() {
                             <h4 className="text-[14px] font-semibold text-white tracking-tight">{item.title}</h4>
                             <span className="text-[11px] font-mono font-semibold text-[#ffb829] tracking-wider px-2 py-0.5 rounded-full border border-[#ffb829]/15 bg-[#ffb829]/5 shrink-0">{item.val}</span>
                           </div>
-                          <p className="text-[13px] text-zinc-400 mt-1 leading-[1.45]">{item.desc}</p>
+                          <p className="text-[13px] text-white mt-1 leading-[1.45] font-semibold text-justify">{item.desc}</p>
                         </div>
                       </div>
                     ))}
                   </div>
 
-                  <div className="border-t border-white/5 pt-5 flex items-center justify-between text-[13px] text-zinc-400">
+                  <div className="border-t border-white/5 pt-5 flex items-center justify-between text-[13px] text-white font-bold">
                     <span>Preço total se comprado separadamente:</span>
-                    <span className="font-semibold text-white/50 line-through">R$ 638,00</span>
+                    <span className="font-bold text-white/80 line-through">R$ 638,00</span>
                   </div>
                 </div>
 
@@ -1373,17 +1455,17 @@ export default function App() {
                   <div className="p-4 border border-white/6 rounded-[24px] text-center bg-black">
                     <ShieldCheck className="w-5 h-5 text-[#15846e] mx-auto mb-2" />
                     <h5 className="text-[12px] font-semibold text-white uppercase tracking-wider">Garantia 7 Dias</h5>
-                    <p className="text-[11px] text-zinc-500 mt-1">Reembolso incondicional</p>
+                    <p className="text-[11px] text-white font-bold mt-1">Reembolso incondicional</p>
                   </div>
                   <div className="p-4 border border-white/6 rounded-[24px] text-center bg-black">
                     <Lock className="w-5 h-5 text-[#15846e] mx-auto mb-2" />
                     <h5 className="text-[12px] font-semibold text-white uppercase tracking-wider">Criptografia SSL</h5>
-                    <p className="text-[11px] text-zinc-500 mt-1">Checkout 100% Blindado</p>
+                    <p className="text-[11px] text-white font-bold mt-1">Checkout 100% Blindado</p>
                   </div>
                   <div className="p-4 border border-white/6 rounded-[24px] text-center bg-black">
                     <Zap className="w-5 h-5 text-[#15846e] mx-auto mb-2" />
                     <h5 className="text-[12px] font-semibold text-white uppercase tracking-wider">Envio Excedente</h5>
-                    <p className="text-[11px] text-zinc-500 mt-1">Acesso instantâneo via email</p>
+                    <p className="text-[11px] text-white font-bold mt-1">Acesso instantâneo via email</p>
                   </div>
                 </div>
               </div>
@@ -1408,15 +1490,15 @@ export default function App() {
                     <div className="p-4 bg-white/[0.02] border border-white/5 rounded-[24px]">
                       <div className="flex items-center justify-between gap-3 mb-2">
                         <span className="text-[12px] font-semibold text-white">Clínica Odonto Prime</span>
-                        <span className="text-[11px] text-zinc-500 font-mono">MAPS_4812</span>
+                        <span className="text-white font-semibold font-mono text-[11px]">MAPS_4812</span>
                       </div>
                       <div className="grid grid-cols-2 gap-3 text-center mt-3">
                         <div className="p-2.5 bg-black rounded-[24px] border border-white/5">
-                          <span className="text-[10px] uppercase font-semibold text-zinc-500">Normal</span>
+                          <span className="text-[10px] uppercase font-bold text-white/70">Normal</span>
                           <div className="text-[15px] text-red-400 font-bold mt-1">Posição #18</div>
                         </div>
                         <div className="p-2.5 bg-black rounded-[24px] border border-[#15846e]/20">
-                          <span className="text-[10px] uppercase font-semibold text-zinc-500">Pro Upgrade</span>
+                          <span className="text-[10px] uppercase font-bold text-white/70">Pro Upgrade</span>
                           <div className="text-[15px] text-[#15846e] font-bold mt-1">Posição #1</div>
                         </div>
                       </div>
@@ -1424,13 +1506,13 @@ export default function App() {
 
                     {/* Interactive GMB Copy Generator Console demo */}
                     <div className="p-4 bg-white/[0.02] border border-white/5 rounded-[24px] space-y-3">
-                      <span className="text-[11px] uppercase tracking-wider font-semibold text-plum-voltage block">
+                      <span className="text-[11px] uppercase tracking-wider font-bold text-plum-voltage block">
                         IA GMB Copywriter Engine
                       </span>
-                      <div className="bg-black p-3 rounded-[24px] border border-white/5 font-mono text-[11px] text-zinc-300 leading-relaxed">
+                      <div className="bg-black p-3 rounded-[24px] border border-white/5 font-mono text-[11px] text-white/90 leading-relaxed font-semibold">
                         "Clínica Odonto Prime em São Paulo especializada em implantes e lentes de contato dentais. Atendimento humanizado no coração comercial da cidade..."
                       </div>
-                      <div className="flex items-center gap-2 text-[10px] text-zinc-500 font-mono">
+                      <div className="flex items-center gap-2 text-[10px] text-white font-bold font-mono">
                         <Info className="w-3.5 h-3.5 text-plum-voltage shrink-0" />
                         <span>Injeta palavras-chave altamente geolocalizadas.</span>
                       </div>
@@ -1445,10 +1527,10 @@ export default function App() {
                       <Star key={item} className="w-3.5 h-3.5 fill-[#ffb829] text-[#ffb829]" />
                     ))}
                   </div>
-                  <blockquote className="text-[13px] italic text-zinc-400 font-normal leading-[1.5]">
+                  <blockquote className="text-[13px] italic text-white/95 font-medium leading-[1.5]">
                     "Fechei 3 novos contratos na primeira semana que apliquei o material de prospecção e o gerador de descrições. Vale cada centavo investido!"
                   </blockquote>
-                  <span className="text-[11px] font-semibold text-white tracking-tight block mt-1">
+                  <span className="text-[11px] font-bold text-white tracking-tight block mt-1">
                     — Douglas G., Consultor de Tráfego Local
                   </span>
                 </div>
@@ -1457,24 +1539,23 @@ export default function App() {
 
             {/* Checkout Action Zone */}
             <div className="p-8 sm:p-12 border border-white/8 rounded-[24px] bg-black text-center max-w-3xl mx-auto">
-              <span className="text-[11px] font-semibold uppercase tracking-widest text-[#ffb829] block mb-3">
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[#ffb829] block mb-3 animate-pulse">
                 CONDIÇÃO DE TRANSAÇÃO IMEDIATA E ÚNICA
               </span>
               <div className="flex items-baseline justify-center gap-3.5 mb-8">
-                <span className="text-zinc-500 text-[18px] line-through">R$ 197</span>
-                <span className="text-white text-[56px] sm:text-[72px] font-[200] leading-none tracking-tight">R$ 47</span>
-                <span className="text-zinc-500 text-[14px]">pago uma única vez</span>
+                <span className="text-white/50 text-[18px] line-through font-bold">R$ 197</span>
+                <span className="text-white text-[56px] sm:text-[72px] font-extrabold leading-none tracking-tight">R$ 47</span>
+                <span className="text-white text-[14px] font-bold">pago uma única vez</span>
               </div>
 
               <div className="flex flex-col gap-4 max-w-md mx-auto">
                 <RippleButton 
-                  className="w-full py-5 text-[12px] bg-plum-voltage text-black hover:bg-[#ffe14f] font-bold"
+                  className="w-full py-5 text-[12px] bg-plum-voltage text-black hover:bg-[#ffe14f] font-bold hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg shadow-plum-voltage/20"
                   onClick={() => {
                     // Open the official secure Kirvano checkout URL in a new window/tab
                     window.open('https://pay.kirvano.com/94547bd8-1439-472a-8b54-b50b0389d086', '_blank');
                     setUpsellIncluded(true);
-                    setCurrentView('success');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    navigateTo('success');
                   }}
                 >
                   SIM, ADICIONAR POR APENAS R$ 47
@@ -1482,21 +1563,138 @@ export default function App() {
 
                 <button
                   onClick={() => {
-                    // Open the official secure Kirvano checkout URL in a new window/tab
-                    window.open('https://pay.kirvano.com/94547bd8-1439-472a-8b54-b50b0389d086', '_blank');
-                    setUpsellIncluded(false);
-                    setCurrentView('success');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    navigateTo('downsell');
                   }}
-                  className="py-4 text-[12px] uppercase tracking-widest text-zinc-500 hover:text-white transition-colors cursor-pointer text-center font-semibold text-[11px]"
+                  className="py-4.5 text-[12px] uppercase tracking-widest text-[#9a9a9a] hover:text-white transition-all duration-300 cursor-pointer text-center font-bold text-[11px] border border-white/10 rounded-[28px] bg-white/5 hover:bg-white/10 hover:scale-[1.03] active:scale-95 animate-pulse"
                 >
                   NÃO, OBRIGADO. PREFIRO PERDER ESTA OPORTUNIDADE
                 </button>
               </div>
 
-              <div className="flex items-center justify-center gap-2 text-zinc-500 text-[12px] mt-6 font-medium">
+              <div className="flex items-center justify-center gap-2 text-white text-[12px] mt-6 font-bold">
                 <ShieldCheck className="w-4 h-4 text-[#15846e]" />
                 <span>Risco zero com 7 dias de garantia integral e incondicional</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ==========================================
+      // 2.5 HIGH-CONVERTING PREMIUM DOWNSELL VIEW
+      // ========================================== */}
+      {currentView === 'downsell' && (
+        <div className="pt-32 pb-24 px-6 relative z-10 w-full animate-fade-in text-white bg-black">
+          <div className="max-w-6xl mx-auto">
+            {/* Top Warning Banner */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 border border-[#ffb829]/30 bg-black p-5 md:p-6 rounded-[24px] mb-12 animate-pulse">
+              <div className="flex items-center gap-3.5">
+                <div className="w-9 h-9 rounded-full bg-[#ffb829]/10 flex items-center justify-center border border-[#ffb829]/15 shrink-0">
+                  <Sparkles className="w-4 h-4 text-[#ffb829]" />
+                </div>
+                <div>
+                  <h4 className="text-[13px] font-bold tracking-[0.05em] uppercase text-[#ffb829]">
+                    Última Tentativa de Acesso Exclusivo
+                  </h4>
+                  <p className="text-[12.5px] text-white font-medium mt-1">
+                    Espera! Não feche esta tela. Reduzimos o valor para você não ficar de fora do grupo selecto.
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row items-center gap-3.5">
+                <ActiveViewersCounter />
+                <CountdownTimer />
+              </div>
+            </div>
+
+            {/* Headline Display */}
+            <div className="text-center md:text-left mb-16 max-w-4xl mx-auto px-4">
+              <span className="text-[12px] font-bold tracking-[0.05em] uppercase text-plum-voltage mb-4 block text-center md:text-left">
+                🚨 Oportunidade Única de Resgate
+              </span>
+              <h1 className="text-[42px] sm:text-[62px] lg:text-[78px] font-black text-white tracking-[-0.04em] leading-[1.0] mb-6 uppercase text-center md:text-left">
+                Leve o FotoSEO Pro Accelerator por apenas R$ 27!
+              </h1>
+              <p className="text-[15px] sm:text-[17px] text-white leading-[1.6] max-w-3xl font-bold text-justify md:text-left">
+                Entendemos que você está hesitante. Por isso, decidimos liberar o <strong className="text-[#ffd200]">Acesso Completo ao FotoSEO Pro Accelerator Suite</strong> com um desconto surreal de resgate. Esta é a ÚLTIMA vez que você verá este preço.
+              </p>
+            </div>
+
+            {/* Split Benefits Checklist */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-20">
+              {/* Left Column Checklist details card */}
+              <div className="lg:col-span-8 space-y-6">
+                <div className="p-6 md:p-8 rounded-[24px] border border-white/7 bg-[#000000] space-y-6">
+                  <h3 className="text-[18px] font-bold text-white tracking-tight flex flex-col md:flex-row items-center md:items-start gap-2 text-center md:text-left">
+                    <Sparkles className="w-4.5 h-4.5 text-[#ffd200]" />
+                    Tudo Incluído no Seu Pacote Especial de R$ 27:
+                  </h3>
+
+                  <div className="space-y-5 border-t border-white/5 pt-5">
+                    {[
+                      {
+                        title: 'Masterclass Dominadores do 3-Pack',
+                        desc: 'Toda a estratégia em vídeo para colocar suas imagens otimizadas no topo das pesquisas locais e arrebatar clientes diariamente.',
+                      },
+                      {
+                        title: 'Gerador GMB AI - Copys & Descrições',
+                        desc: 'O formulador de descrições e legendas de alta relevância por IA para indexação brutal nas coordenadas geográficas.',
+                      },
+                      {
+                        title: '50 Templates Canva + Planilha CRM de Prospecção',
+                        desc: 'Os roteiros, modelos prontos e o funil de abordagem definitivo para captar clientes que precisam de SEO.',
+                      },
+                    ].map((item, idx) => (
+                      <div key={idx} className="flex gap-4 items-start">
+                        <div className="w-6 h-6 rounded-full bg-[#15846e]/10 border border-[#15846e]/20 flex items-center justify-center shrink-0 mt-0.5">
+                          <Check className="w-3.5 h-3.5 text-lichen" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-[14px] font-bold text-white tracking-tight">{item.title}</h4>
+                          <p className="text-[13px] text-zinc-100 mt-1 leading-[1.45] font-semibold text-justify">{item.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column Value Card */}
+              <div className="lg:col-span-4 p-8 border border-[#ffb829]/20 bg-[#000000] rounded-[24px] text-center flex flex-col justify-between h-full">
+                <div>
+                  <span className="text-[10px] font-semibold tracking-wide uppercase text-[#ffb829] block mb-3">
+                    APENAS NESTA TELA
+                  </span>
+                  <div className="text-[14px] text-white/50 line-through font-bold">R$ 197</div>
+                  <div className="text-[52px] sm:text-[62px] font-extrabold text-white leading-none tracking-tight my-4">R$ 27</div>
+                  <div className="text-[11px] text-[#ffd200] font-bold uppercase tracking-wider mb-8">
+                    Taxa Única Sem Mensalidades!
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <RippleButton
+                    className="w-full py-4.5 text-[12px] bg-[#ffd200] text-black font-bold uppercase hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg shadow-[#ffd200]/20"
+                    onClick={() => {
+                      // Open secure Checkout Kirvano
+                      window.open('https://pay.kirvano.com/94547bd8-1439-472a-8b54-b50b0389d086', '_blank');
+                      setUpsellIncluded(true);
+                      navigateTo('success');
+                    }}
+                  >
+                    QUERO ATIVAR POR R$ 27!
+                  </RippleButton>
+
+                  <button
+                    onClick={() => {
+                      setUpsellIncluded(false);
+                      navigateTo('success');
+                    }}
+                    className="w-full py-3.5 text-[11px] font-bold uppercase text-white/60 hover:text-white border border-white/10 rounded-full hover:bg-white/5 bg-transparent hover:scale-[1.03] active:scale-95 transition-all duration-300 animated-pulse"
+                  >
+                    NÃO, DEIXAR O ACESSO PRO DE LADO
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -1507,20 +1705,20 @@ export default function App() {
       // 3. SECURE INVOICE & ORDER SUCCESSFUL VIEW
       // ========================================== */}
       {currentView === 'success' && (
-        <div className="pt-32 pb-24 px-6 relative z-10 w-full animate-fade-in text-white">
+        <div className="pt-32 pb-24 px-6 relative z-10 w-full animate-fade-in text-white bg-black">
           <div className="max-w-2xl mx-auto">
             {/* Approved Visual Shield */}
             <div className="text-center mb-10">
               <div className="w-16 h-16 rounded-full bg-[#15846e]/10 border border-[#15846e]/25 flex items-center justify-center mx-auto mb-6">
                 <Check className="w-7 h-7 text-[#15846e]" />
               </div>
-              <span className="text-[11px] font-semibold tracking-widest uppercase text-[#15846e] block mb-2">
+              <span className="text-[11px] font-bold tracking-widest uppercase text-[#15846e] block mb-2">
                 Transação Concluída com Sucesso
               </span>
-              <h1 className="text-[36px] sm:text-[46px] font-[200] tracking-tight leading-[1.1] text-white">
+              <h1 className="text-[36px] sm:text-[46px] font-bold tracking-tight leading-[1.1] text-white">
                 Seu acesso foi liberado!
               </h1>
-              <p className="text-[14px] text-zinc-400 mt-2">
+              <p className="text-[14px] text-white font-medium mt-2">
                 O recibo estruturado foi enviado para seu e-mail de faturamento cadastrado.
               </p>
             </div>
@@ -1530,12 +1728,12 @@ export default function App() {
               {/* Row head details */}
               <div className="p-6 bg-white/[0.02] border-b border-white/6 flex flex-wrap justify-between items-center gap-4">
                 <div>
-                  <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-semibold block">Identificador</span>
-                  <span className="text-[13px] text-white font-mono mt-0.5 block">#FSEO-9082-TRAC</span>
+                  <span className="text-[10px] text-white font-bold uppercase tracking-widest block">Identificador</span>
+                  <span className="text-[13px] text-white font-mono mt-0.5 block font-bold">#FSEO-9082-TRAC</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-semibold block">Data do Processamento</span>
-                  <span className="text-[13px] text-white font-mono mt-0.5 block">
+                  <span className="text-[10px] text-white font-bold uppercase tracking-widest block">Data do Processamento</span>
+                  <span className="text-[13px] text-white font-mono mt-0.5 block font-bold">
                     {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
@@ -1543,38 +1741,38 @@ export default function App() {
 
               {/* Purchase entries breakdown */}
               <div className="p-6 space-y-4">
-                <div className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">Resumo da Ordem de Pagamento</div>
+                <div className="text-[11px] font-bold text-white uppercase tracking-wider mb-2">Resumo da Ordem de Pagamento</div>
 
                 <div className="space-y-3.5">
                   <div className="flex justify-between items-center gap-4 py-1">
                     <div>
-                      <span className="text-[14px] font-semibold text-white block">Licença Vitalícia FotoSEO Standard</span>
-                      <span className="text-[12px] text-zinc-500 mt-0.5 block">Navegador online, injeção de coordenadas e metadados</span>
+                      <span className="text-[14px] font-bold text-white block">Licença Vitalícia FotoSEO Standard</span>
+                      <span className="text-[12px] text-white mt-0.5 block font-medium">Navegador online, injeção de coordenadas e metadados</span>
                     </div>
-                    <span className="text-[14px] font-mono font-semibold text-white shrink-0">R$ 97,00</span>
+                    <span className="text-[14px] font-mono font-bold text-white shrink-0">R$ 97,00</span>
                   </div>
 
                   {upsellIncluded && (
                     <div className="flex justify-between items-center gap-4 py-3 border-t border-white/5">
                       <div>
-                        <span className="text-[14px] font-semibold text-white block flex items-center gap-2">
+                        <span className="text-[14px] font-bold text-white block flex items-center gap-2">
                           FotoSEO Pro Accelerator Suite
-                          <span className="px-1.5 py-0.5 text-[9px] bg-plum-voltage/10 text-plum-voltage border border-plum-voltage/20 rounded font-semibold uppercase tracking-wide">
+                          <span className="px-1.5 py-0.5 text-[9px] bg-plum-voltage/10 text-plum-voltage border border-plum-voltage/20 rounded font-bold uppercase tracking-wide">
                             Upgrade Pro
                           </span>
                         </span>
-                        <span className="text-[12px] text-zinc-500 mt-0.5 block">Masterclass Vídeo, IA Copywriter, Planilha CRM + Templates</span>
+                        <span className="text-[12px] text-white/90 font-medium mt-0.5 block">Masterclass Vídeo, IA Copywriter, Planilha CRM + Templates</span>
                       </div>
-                      <span className="text-[14px] font-mono font-semibold text-[#ffb829] shrink-0">R$ 47,00</span>
+                      <span className="text-[14px] font-mono font-bold text-[#ffb829] shrink-0">R$ 27,00</span>
                     </div>
                   )}
                 </div>
 
                 {/* Secure bottom overall */}
-                <div className="border-t border-white/8 pt-5 mt-5 flex justify-between items-center">
-                  <span className="text-[12px] text-zinc-400 font-semibold uppercase tracking-wider">Total de Débito Seguro</span>
+                <div className="border-t border-white/8 pt-5 mt-5 flex justify-between items-center font-bold">
+                  <span className="text-[12px] text-white font-bold uppercase tracking-wider">Total de Débito Seguro</span>
                   <span className="text-[24px] font-mono font-bold text-plum-voltage">
-                    R$ {upsellIncluded ? '144,00' : '97,00'}
+                    R$ {upsellIncluded ? '124,00' : '97,00'}
                   </span>
                 </div>
               </div>
@@ -1636,7 +1834,7 @@ export default function App() {
                   setUpsellIncluded(null);
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className="text-zinc-500 hover:text-white transition-colors cursor-pointer text-[12px] uppercase font-semibold tracking-wider p-2"
+                className="text-white hover:text-[#ffd200] transition-colors cursor-pointer text-[12px] uppercase font-bold tracking-wider p-2"
               >
                 Simular Nova Transação (Voltar ao Início)
               </button>
@@ -1645,72 +1843,76 @@ export default function App() {
         </div>
       )}
 
-      {/* Dynamic Floating Quick Switcher for evaluators */}
-      <div className="fixed bottom-6 right-6 z-50 bg-[#0d0d0d]/90 border border-white/10 rounded-[24px] p-1.5 flex gap-1.5 backdrop-blur-xl shadow-2xl">
-        <button
-          onClick={() => {
-            setCurrentView('landing');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          className={`px-3.5 py-2 rounded-[24px] text-[10px] font-semibold tracking-wider uppercase transition-all cursor-pointer ${
-            currentView === 'landing' ? 'bg-plum-voltage text-black font-bold' : 'text-zinc-400 hover:text-white'
-          }`}
-        >
-          Landing Page
-        </button>
-        <button
-          onClick={() => {
-            setCurrentView('upsell');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          className={`px-3.5 py-2 rounded-[24px] text-[10px] font-semibold tracking-wider uppercase transition-all cursor-pointer ${
-            currentView === 'upsell' ? 'bg-plum-voltage text-black font-bold' : 'text-zinc-400 hover:text-white'
-          }`}
-        >
-          Página de Upsell
-        </button>
-      </div>
+
 
       {/* FOOTER */}
       <footer className="bg-black py-12 border-t border-white/8 relative">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-[24px] border border-plum-voltage flex items-center justify-center">
-              <Camera className="w-4 h-4 text-white" />
+        <div className="max-w-7xl mx-auto px-6 flex flex-col items-center justify-between gap-6">
+          <div className="w-full flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-[24px] border border-plum-voltage flex items-center justify-center">
+                <Camera className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-white text-md font-bold tracking-tight">FotoSEO</span>
             </div>
-            <span className="text-white text-md font-semibold tracking-tight">FotoSEO</span>
-          </div>
 
-          <div className="text-zinc-500 text-[13px] font-normal flex flex-col md:flex-row items-center gap-2 md:gap-4">
-            <span>&copy; {new Date().getFullYear()} FotoSEO. Todos os direitos reservados.</span>
-            <span className="hidden md:inline text-white/10">|</span>
-            <span>
-              Desenvolvido por{' '}
-              <a 
-                href="https://bio.supremamidia.com.br" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-plum-voltage hover:underline"
-              >
-                Suprema Mídia
+            <div className="text-white text-[13px] font-bold flex flex-col md:flex-row items-center gap-2 md:gap-4">
+              <span>&copy; {new Date().getFullYear()} FotoSEO. Todos os direitos reservados.</span>
+              <span className="hidden md:inline text-white/30">|</span>
+              <span>
+                Desenvolvido por{' '}
+                <a 
+                  href="https://bio.supremamidia.com.br" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-plum-voltage hover:underline font-bold"
+                >
+                  Suprema Mídia
+                </a>
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-6">
+              <a href="https://www.supremamidia.com.br" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#ffd200] text-[13px] transition-colors font-bold">
+                Site do Produtor
               </a>
-            </span>
+              <span className="text-white/30">|</span>
+              <a href="https://fotoseo.shop" className="text-white hover:text-[#ffd200] text-[13px] transition-colors font-bold">
+                Canônica
+              </a>
+              <span className="text-white/30">|</span>
+              <span className="text-white text-[13px] font-bold">Termos de Uso</span>
+              <span className="text-white/30">|</span>
+              <span className="text-white text-[13px] font-bold">Política de Privacidade</span>
+              <span className="text-white/30">|</span>
+              <span className="text-white text-[13px] font-bold">Suporte</span>
+            </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-6">
-            <a href="https://www.supremamidia.com.br" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-white text-[13px] transition-colors font-medium">
-              Site do Produtor
-            </a>
-            <span className="text-white/10">|</span>
-            <a href="https://fotoseo.shop" className="text-zinc-500 hover:text-white text-[13px] transition-colors">
-              Canônica
-            </a>
-            <span className="text-white/10">|</span>
-            <span className="text-zinc-500 text-[13px]">Termos de Uso</span>
-            <span className="text-white/10">|</span>
-            <span className="text-zinc-500 text-[13px]">Política de Privacidade</span>
-            <span className="text-white/10">|</span>
-            <span className="text-zinc-500 text-[13px]">Suporte</span>
+          {/* Small secret links to upsell and downsell */}
+          <div className="flex flex-wrap items-center justify-between gap-4 text-[10px] text-white/40 border-t border-white/5 pt-6 w-full mt-4 font-bold">
+            <div className="flex gap-4">
+              <button 
+                onClick={() => {
+                  setCurrentView('upsell');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }} 
+                className="hover:text-[#ffd200] transition-colors cursor-pointer text-[10px] font-bold"
+              >
+                FSEO_UPSELL_PAGE
+              </button>
+              <span className="text-white/10">|</span>
+              <button 
+                onClick={() => {
+                  setCurrentView('downsell');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }} 
+                className="hover:text-[#ffd200] transition-colors cursor-pointer text-[10px] font-bold"
+              >
+                FSEO_DOWNSELL_PAGE
+              </button>
+            </div>
+            <span>FOTOSEO® SISTEMA DE ALTÍSSIMA CONVERSÃO UNIFICADA</span>
           </div>
         </div>
       </footer>
