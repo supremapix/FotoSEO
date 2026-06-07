@@ -569,27 +569,27 @@ export default function App() {
 
   // Static Data lists structure mapping
   const stats = [
-    { value: '10×', label: 'mais visibilidade no Google Maps' },
-    { value: '10', label: 'fotos otimizadas por operação' },
-    { value: '100%', label: 'no navegador, sem instalar nada' },
-    { value: '3 min', label: 'para otimizar um cliente completo' },
+    { value: '10×', label: 'Mais visitas locais vindas do Google Meu Negócio' },
+    { value: '10', label: 'Fotos prontas juntas de uma única vez em poucos cliques' },
+    { value: '100%', label: 'Funciona na Internet, sem precisar instalar nenhum programa' },
+    { value: '3 min', label: 'Minutos para deixar todas as fotos perfeitas' },
   ];
 
   const painPoints = [
     {
       icon: MapPinOff,
       title: 'Sem GPS nas fotos',
-      desc: 'Câmeras profissionais e smartphones sem geolocalização ativa geram imagens sem posicionamento no mapa.',
+      desc: 'As fotos tiradas por celulares comuns vêm sem o seu endereço gravado dentro delas. Sem essas informações, o robô do Google Meu Negócio fica confuso e não sabe onde a sua clínica, escritório ou comércio realmente fica.',
     },
     {
       icon: Tag,
       title: 'Sem tags e palavras-chave',
-      desc: 'Imagens vazias não alimentam o buscador com relevância semântica necessária para o SEO local de excelência.',
+      desc: 'Suas imagens normais não informam ao Google o que você vende ou faz. Elas são exibidas como arquivos vazios e invisíveis para novos clientes locais que pesquisam no seu bairro.',
     },
     {
       icon: FileX,
       title: 'Nome de arquivo errado',
-      desc: 'Arquivos nomeados de forma genérica perdem a oportunidade valiosa de ranquear termos de busca regionais.',
+      desc: 'Salvar e subir fotos com nomes de fábrica como "IMG_1234.jpg" enterra e esconde o seu perfil. Suas fotos deveriam estar escritas com o nome do seu serviço oficial (exemplo: "pintor-em-curitiba.jpg").',
     },
   ];
 
@@ -597,68 +597,68 @@ export default function App() {
     {
       num: '01',
       icon: Upload,
-      title: 'Carregue as fotos',
-      desc: 'Arraste ou selecione até 10 imagens JPEG/PNG de uma só vez direto no painel web FotoSEO.',
+      title: '1. Selecione as imagens',
+      desc: 'Clique no botão de Enviar ou arraste as fotos de sua empresa. É um processo muito simples, seguro e super rápido de fazer, ideal para qualquer pessoa.',
     },
     {
       num: '02',
       icon: MapPin,
-      title: 'Otimização Completa',
-      desc: 'Digite o endereço do negócio local, insira suas palavras-chave e clique para gerar o mapeamento EXIF.',
+      title: '2. Digite seu Endereço',
+      desc: 'Escreva de forma simples o endereço onde atende. Automaticamente, nosso sistema calcula a localização de satélite necessária e coloca de forma segura dentro das fotos.',
     },
     {
       num: '03',
       icon: Archive,
-      title: 'Baixe e publique',
-      desc: 'Em segundos suas imagens com metadados injetados estão prontas num ZIP limpo e otimizado.',
+      title: '3. Baixe e use gratis',
+      desc: 'Com um clique, você baixa todas as fotos prontas e otimizadas organizadas em uma pasta amigável. Suba as novas fotos ricas em dados no Google para ver os resultados.',
     },
   ];
 
   const features = [
     {
       icon: Navigation,
-      title: 'GPS por Endereço',
-      desc: 'Insira qualquer endereço global e nossa tecnologia busca e converte em coordenadas geográficas precisas.',
+      title: 'Localizador GPS por Endereço',
+      desc: 'Digite o endereço de forma simples. O sistema traduz em coordenadas de satélite exatas e insere no arquivo das fotos de forma automática por você.',
     },
     {
       icon: Tags,
-      title: 'Injeção de Hashtags',
-      desc: 'Adicione suas palavras-chave estratégicas diretamente nos metadados ocultos IPTC de forma inteligente.',
+      title: 'Palavras-Chave Fáceis',
+      desc: 'Adicione palavras de busca essenciais (exemplo: "advogado perto de mim" ou "padaria de bairro") que atraem moradores da vizinhança.',
     },
     {
       icon: FileText,
-      title: 'Tags Alt & Descrição',
-      desc: 'Preencha campos alt, títulos de metadados e resumos de imagem que robôs de rastreio interpretam.',
+      title: 'Descrições Invisíveis que Google deita e rola',
+      desc: 'Insira legendas de texto oculto que o robô do Google lê instantaneamente para comprovar a qualidade do seu perfil para toda a sua região.',
     },
     {
       icon: FolderPen,
-      title: 'Renomear Inteligente',
-      desc: 'Padronize e organize em massa os títulos originais dos arquivos concatenando termos de busca locais.',
+      title: 'Renomeador Inteligente em Massa',
+      desc: 'Nós renomeamos todas as fotos com o seu serviço profissional e sua cidade automaticamente de forma padrão, bonita e muito organizada.',
     },
     {
       icon: Layers,
-      title: 'EXIF Puro',
-      desc: 'Subtags completas de latitude, longitude e altitude gravadas sem compressão ou degradação de pixels.',
+      title: 'Metadados de Satélite Puros',
+      desc: 'Garantimos a gravação das coordenadas de localização com alta nitidez, sem diminuir de forma alguma a qualidade original da imagem.',
     },
     {
       icon: Package,
-      title: 'Compactação ZIP',
-      desc: 'Geração automatizada de pacote exportável unificado para você baixar toda a remessa tratada com um clique.',
+      title: 'Pasta ZIP Prática e Compacta',
+      desc: 'Para simplificar e evitar bagunça, todas as imagens prontas são guardadas juntas em uma única pasta leve que você baixa com apenas um clique.',
     },
     {
       icon: Monitor,
-      title: 'Interface Ultra Clean',
-      desc: 'Operabilidade desenhada minuciosamente para ser veloz, intuitiva e sem complexidades ou lógicas extras.',
+      title: 'Botões Maiores e Letras Nítidas',
+      desc: 'Uma tela limpa, desenhada com botões grandes, contraste nítido, clareza máxima e texto amigável feito especialmente para quem não entende de programação.',
     },
     {
       icon: Table,
-      title: 'Histórico de Lote',
-      desc: 'Monitore as fotos que já passaram pelo pipeline de injeção diretamente em um sumário de controle geral.',
+      title: 'Tabela de Controle Amigável',
+      desc: 'Para você nunca se perder, uma listinha simples na tela mostra quais fotos já foram otimizadas e o andamento geral da sua rotina.',
     },
     {
       icon: Satellite,
-      title: 'Sinal de Satélite Fixo',
-      desc: 'Emulação geo-convergente que garante aceitação absoluta dos dados pelo ecossistema de dados locais.',
+      title: 'Sinal Verificado e Seguro',
+      desc: 'Garante o envio das coordenadas perfeitas, sem emitir nenhum erro de localização, fazendo com que os servidores do Google aprovem seus dados na hora.',
     },
   ];
 
@@ -889,7 +889,7 @@ export default function App() {
               </div>
 
               {/* H1 Headline display splits precisely onto 3 lines */}
-              <h1 className="text-white font-[800] leading-[1.0] tracking-[-0.04em] mb-8 text-[44px] sm:text-[62px] lg:text-[76px] uppercase text-center md:text-left">
+              <h1 className="text-white font-[800] leading-[1.0] tracking-[-0.04em] mb-8 text-[32px] sm:text-[46px] lg:text-[58px] uppercase text-center md:text-left">
                 <span
                   className="block animate-fade-up"
                   style={{ animationDelay: '100ms' }}
@@ -973,7 +973,7 @@ export default function App() {
             <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block text-center">
               O Gargalo Invisível
             </span>
-            <h2 className="text-[36px] md:text-[48px] font-bold text-white tracking-[-0.03em] leading-[1.1] mb-5 uppercase text-center">
+            <h2 className="text-[28px] md:text-[38px] font-bold text-white tracking-[-0.03em] leading-[1.1] mb-5 uppercase text-center">
               Por que suas fotos normais estão matando o seu posicionamento no Google?
             </h2>
             <p className="text-white/90 font-medium text-[16px] leading-[1.6] text-justify md:text-center">
@@ -990,9 +990,9 @@ export default function App() {
                   delay={idx * 150}
                   className="group relative rounded-[24px] border border-red-500/15 bg-[#000000] p-8 hover:border-red-500/30 transition-all duration-300 transform"
                 >
-                  {/* Subtle red indicator */}
-                  <div className="w-12 h-12 rounded-[24px] border border-red-500/20 bg-red-950/10 flex items-center justify-center mb-6 mx-auto md:mx-0">
-                    <IconComponent className="w-5 h-5 text-red-400" />
+                  {/* Large, clear icon for elderly users */}
+                  <div className="w-18 h-18 rounded-[24px] border border-red-500/25 bg-red-955/15 flex items-center justify-center mb-6 mx-auto md:mx-0 transition-all duration-300 group-hover:scale-105">
+                    <IconComponent className="w-8 h-8 text-red-400" />
                   </div>
                   <h3 className="text-[20px] font-semibold text-white tracking-tight mb-3 text-center md:text-left">
                     {item.title}
@@ -1010,12 +1010,12 @@ export default function App() {
       {/* COMO FUNCIONA SECTION */}
       <section id="funcionamento" className="bg-black py-24 border-t border-white/8 relative">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-2xl mx-auto mb-20 px-4">
+          <div className="text-center max-w-3xl mx-auto mb-20 px-4">
             <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block text-center">
               Praticidade Absoluta
             </span>
-            <h2 className="text-[36px] md:text-[48px] font-bold text-white tracking-[-0.03em] leading-[1.1] uppercase text-center">
-              A FORMIDÁVEL FÓRMULA DE 3 PASSOS QUE TE COLOCA NA RESPOSTA NÚMERO #1 DO GOOGLE MAPS
+            <h2 className="text-[28px] md:text-[38px] font-bold text-white tracking-[-0.03em] leading-[1.1] uppercase text-center">
+              A FÓRMULA SIMPLES DE 3 PASSOS QUE TE COLOCA EM PRIMEIRO LUGAR NO GOOGLE MAPS
             </h2>
           </div>
 
@@ -1033,8 +1033,9 @@ export default function App() {
                     {item.num}
                   </div>
 
-                  <div className="w-12 h-12 rounded-[24px] border border-plum-voltage/20 bg-plum-voltage/5 flex items-center justify-center mb-8 mx-auto md:mx-0">
-                    <IconComponent className="w-5 h-5 text-plum-voltage" />
+                  {/* Large, clear icon for elderly users */}
+                  <div className="w-18 h-18 rounded-[24px] border border-plum-voltage/30 bg-plum-voltage/10 flex items-center justify-center mb-8 mx-auto md:mx-0 transition-all duration-300 group-hover:scale-105">
+                    <IconComponent className="w-8 h-8 text-plum-voltage" />
                   </div>
 
                   <h3 className="text-[20px] font-semibold text-white tracking-tight mb-3 text-center md:text-left">
@@ -1060,8 +1061,8 @@ export default function App() {
             <span className="text-[12px] font-semibold tracking-[0.025em] uppercase text-plum-voltage mb-4 block text-center">
               Poder de Fogo Completo
             </span>
-            <h2 className="text-[36px] md:text-[48px] font-bold text-white tracking-[-0.03em] leading-[1.1] uppercase text-center">
-              Poder de fogo supremo para esmagar seus concorrentes locais
+            <h2 className="text-[28px] md:text-[38px] font-bold text-white tracking-[-0.03em] leading-[1.1] uppercase text-center">
+              Tecnologia Completa para você Dominar a sua Cidade
             </h2>
           </div>
 
@@ -1074,8 +1075,9 @@ export default function App() {
                   delay={(idx % 3) * 100}
                   className="group relative rounded-[24px] border border-white/8 bg-[#000000] p-8 hover:border-plum-voltage/40 hover:-translate-y-2.5 transition-all duration-300"
                 >
-                  <div className="w-12 h-12 rounded-[24px] border border-lichen/20 bg-lichen/5 flex items-center justify-center mb-6 mx-auto md:mx-0">
-                    <IconComponent className="w-5 h-5 text-lichen" />
+                  {/* Large, clear icon for elderly users */}
+                  <div className="w-18 h-18 rounded-[24px] border border-lichen/35 bg-lichen/10 flex items-center justify-center mb-6 mx-auto md:mx-0 transition-all duration-300 group-hover:scale-105">
+                    <IconComponent className="w-8 h-8 text-lichen" />
                   </div>
 
                   <h3 className="text-[18px] font-semibold text-white tracking-tight mb-2 text-center md:text-left">
@@ -1100,7 +1102,7 @@ export default function App() {
             <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block text-center">
               Comparativo Técnico
             </span>
-            <h2 className="text-[36px] md:text-[48px] font-bold text-white tracking-[-0.03em] leading-[1.1] mb-5 uppercase text-center">
+            <h2 className="text-[26px] md:text-[34px] font-bold text-white tracking-[-0.03em] leading-[1.1] mb-5 uppercase text-center">
               O ABISMO DE DIFERENÇA ENTRE QUEM VENDE MUITO E QUEM CONTINUA INVISÍVEL
             </h2>
             <p className="text-white/95 font-[500] text-[15px] text-justify md:text-center">
@@ -1162,7 +1164,7 @@ export default function App() {
             <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block text-center">
               Sucesso Prático
             </span>
-            <h2 className="text-[36px] md:text-[48px] font-bold text-white tracking-[-0.03em] leading-[1.1] uppercase text-center">
+            <h2 className="text-[26px] md:text-[34px] font-bold text-white tracking-[-0.03em] leading-[1.1] uppercase text-center">
               RESULTADOS REALMENTE INCRÍVEIS DE QUEM JÁ DOMINOU O GOOGLE MAPS
             </h2>
           </div>
@@ -1209,7 +1211,7 @@ export default function App() {
             <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block text-center">
               Acesso Imediato
             </span>
-            <h2 className="text-[36px] md:text-[48px] font-bold text-white tracking-[-0.03em] leading-[1.1] mb-5 uppercase text-center">
+            <h2 className="text-[26px] md:text-[34px] font-bold text-white tracking-[-0.03em] leading-[1.1] mb-5 uppercase text-center">
               ADQUIRA AGORA O SEU ACESSO VITALÍCIO COM DESCONTO DE LANÇAMENTO EXCLUSIVO
             </h2>
           </div>
@@ -1277,7 +1279,7 @@ export default function App() {
             <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block text-center">
               Dúvidas Frequentes
             </span>
-            <h2 className="text-[36px] md:text-[48px] font-bold text-white tracking-[-0.03em] leading-[1.1] uppercase text-center">
+            <h2 className="text-[26px] md:text-[34px] font-bold text-white tracking-[-0.03em] leading-[1.1] uppercase text-center">
               RESPOSTAS DIRETAS E 100% TRANSPARENTES PARA SUAS DÚVIDAS
             </h2>
           </div>
@@ -1324,7 +1326,7 @@ export default function App() {
       <section className="bg-black py-28 border-t border-white/8 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-[42px] sm:text-[58px] lg:text-[76px] font-[800] text-white tracking-[-0.03em] leading-[0.95] mb-10 uppercase">
+            <h2 className="text-[28px] sm:text-[42px] lg:text-[54px] font-[800] text-white tracking-[-0.03em] leading-[0.95] mb-10 uppercase text-center">
               ENQUANTO VOCÊ PENSA,<br />
               SEU CONCORRENTE JÁ INJETOU OUTRA FOTO!
             </h2>
@@ -1387,7 +1389,7 @@ export default function App() {
               <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block text-center md:text-left">
                 Upgrade Imediato de Alta Conversão
               </span>
-              <h1 className="text-[42px] sm:text-[62px] lg:text-[78px] font-bold text-white tracking-[-0.04em] leading-[1.0] mb-6 uppercase text-center md:text-left">
+              <h1 className="text-[28px] sm:text-[44px] lg:text-[58px] font-bold text-white tracking-[-0.04em] leading-[1.0] mb-6 uppercase text-center md:text-left">
                 Domine o Google Maps totalmente e multiplique seu faturamento hoje!
               </h1>
               <p className="text-[15px] sm:text-[17px] text-white leading-[1.6] max-w-2xl font-bold text-justify md:text-left">
@@ -1612,7 +1614,7 @@ export default function App() {
               <span className="text-[12px] font-bold tracking-[0.05em] uppercase text-plum-voltage mb-4 block text-center md:text-left">
                 🚨 Oportunidade Única de Resgate
               </span>
-              <h1 className="text-[42px] sm:text-[62px] lg:text-[78px] font-black text-white tracking-[-0.04em] leading-[1.0] mb-6 uppercase text-center md:text-left">
+              <h1 className="text-[28px] sm:text-[44px] lg:text-[58px] font-black text-white tracking-[-0.04em] leading-[1.0] mb-6 uppercase text-center md:text-left">
                 Leve o FotoSEO Pro Accelerator por apenas R$ 27!
               </h1>
               <p className="text-[15px] sm:text-[17px] text-white leading-[1.6] max-w-3xl font-bold text-justify md:text-left">
