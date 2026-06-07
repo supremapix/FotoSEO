@@ -55,7 +55,7 @@ function CanvasHero() {
     let width = (canvas.width = canvas.offsetWidth);
     let height = (canvas.height = canvas.offsetHeight);
 
-    const colors = ['#8052ff', '#ffb829', '#15846e', '#ffffff'];
+    const colors = ['#ffd200', '#ffb829', '#15846e', '#ffffff'];
     const shapes = ['circle', 'triangle', 'diamond', 'square'];
 
     // Create 940 particles for dense constellation
@@ -357,7 +357,7 @@ function RippleButton({
 
   const actionStyle = isSecondaryOutline
     ? 'border border-white/10 text-white hover:bg-white/5 px-6 py-4'
-    : 'bg-[#8052ff] hover:opacity-85 text-white px-7 py-4';
+    : 'bg-[#ffd200] hover:bg-[#ffe14f] text-black px-7 py-4 font-bold';
 
   return (
     <button
@@ -954,7 +954,7 @@ export default function App() {
                     {item.num}
                   </div>
 
-                  <div className="w-12 h-12 rounded-[24px] border border-plum-voltage/20 bg-[#8052ff]/5 flex items-center justify-center mb-8">
+                  <div className="w-12 h-12 rounded-[24px] border border-plum-voltage/20 bg-plum-voltage/5 flex items-center justify-center mb-8">
                     <IconComponent className="w-5 h-5 text-plum-voltage" />
                   </div>
 
@@ -1040,7 +1040,7 @@ export default function App() {
                   <th className="p-6 text-[13px] font-semibold uppercase tracking-wider text-red-400 w-[35%] border-l border-white/8">
                     Sem FotoSEO
                   </th>
-                  <th className="p-6 text-[13px] font-semibold uppercase tracking-wider text-[#8052ff] w-[35%] border-l border-white/8">
+                  <th className="p-6 text-[13px] font-semibold uppercase tracking-wider text-plum-voltage w-[35%] border-l border-white/8">
                     Com FotoSEO
                   </th>
                 </tr>
@@ -1219,7 +1219,7 @@ export default function App() {
                   <div className="w-8 h-8 rounded-[24px] border border-white/8 flex items-center justify-center shrink-0 transition-all duration-300">
                     <Plus
                       className={`w-4 h-4 text-white transition-transform duration-300 ${
-                        openFaqIndex === idx ? 'rotate-45 text-[#8052ff]' : ''
+                        openFaqIndex === idx ? 'rotate-45 text-plum-voltage' : ''
                       }`}
                     />
                   </div>
@@ -1302,7 +1302,7 @@ export default function App() {
 
             {/* Headline Display */}
             <div className="text-left mb-16 max-w-4xl">
-              <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-[#8052ff] mb-4 block">
+              <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block">
                 Upgrade Imediato de Alta Conversão
               </span>
               <h1 className="text-[42px] sm:text-[62px] lg:text-[78px] font-[200] text-white tracking-[-0.04em] leading-[0.9] mb-6">
@@ -1320,7 +1320,7 @@ export default function App() {
               <div className="lg:col-span-7 space-y-6">
                 <div className="p-6 md:p-8 rounded-[24px] border border-white/7 bg-[#000000] space-y-6">
                   <h3 className="text-[18px] font-semibold text-white tracking-tight flex items-center gap-2">
-                    <Sparkles className="w-4.5 h-4.5 text-[#8052ff]" />
+                    <Sparkles className="w-4.5 h-4.5 text-plum-voltage" />
                     O que você recebe imediatamente ao ativar o Upgrade Pro:
                   </h3>
 
@@ -1390,11 +1390,11 @@ export default function App() {
 
               {/* Right Column Interactive simulation terminal panel */}
               <div className="lg:col-span-5 bg-black border border-white/8 rounded-[24px] p-6 lg:p-8 relative overflow-hidden self-stretch flex flex-col justify-between space-y-8">
-                <div className="absolute top-0 right-0 w-36 h-36 bg-[#8052ff]/8 blur-[65px] rounded-full pointer-events-none" />
+                <div className="absolute top-0 right-0 w-36 h-36 bg-plum-voltage/8 blur-[65px] rounded-full pointer-events-none" />
 
                 <div>
                   <div className="flex justify-between items-center mb-6">
-                    <div className="text-[11px] font-mono text-[#8052ff] tracking-[0.05em] uppercase font-bold">
+                    <div className="text-[11px] font-mono text-plum-voltage tracking-[0.05em] uppercase font-bold">
                       PRO_RANK_ACCELERATOR
                     </div>
                     <span className="px-2.5 py-1 rounded-[24px] bg-[#15846e]/10 border border-[#15846e]/20 text-[9px] font-mono text-[#15846e] flex items-center gap-1 font-semibold tracking-wider">
@@ -1424,14 +1424,14 @@ export default function App() {
 
                     {/* Interactive GMB Copy Generator Console demo */}
                     <div className="p-4 bg-white/[0.02] border border-white/5 rounded-[24px] space-y-3">
-                      <span className="text-[11px] uppercase tracking-wider font-semibold text-[#8052ff] block">
+                      <span className="text-[11px] uppercase tracking-wider font-semibold text-plum-voltage block">
                         IA GMB Copywriter Engine
                       </span>
                       <div className="bg-black p-3 rounded-[24px] border border-white/5 font-mono text-[11px] text-zinc-300 leading-relaxed">
                         "Clínica Odonto Prime em São Paulo especializada em implantes e lentes de contato dentais. Atendimento humanizado no coração comercial da cidade..."
                       </div>
                       <div className="flex items-center gap-2 text-[10px] text-zinc-500 font-mono">
-                        <Info className="w-3.5 h-3.5 text-[#8052ff] shrink-0" />
+                        <Info className="w-3.5 h-3.5 text-plum-voltage shrink-0" />
                         <span>Injeta palavras-chave altamente geolocalizadas.</span>
                       </div>
                     </div>
@@ -1468,7 +1468,7 @@ export default function App() {
 
               <div className="flex flex-col gap-4 max-w-md mx-auto">
                 <RippleButton 
-                  className="w-full py-5 text-[12px] bg-[#8052ff]"
+                  className="w-full py-5 text-[12px] bg-plum-voltage text-black hover:bg-[#ffe14f] font-bold"
                   onClick={() => {
                     // Open the official secure Kirvano checkout URL in a new window/tab
                     window.open('https://pay.kirvano.com/94547bd8-1439-472a-8b54-b50b0389d086', '_blank');
@@ -1559,7 +1559,7 @@ export default function App() {
                       <div>
                         <span className="text-[14px] font-semibold text-white block flex items-center gap-2">
                           FotoSEO Pro Accelerator Suite
-                          <span className="px-1.5 py-0.5 text-[9px] bg-[#8052ff]/10 text-[#8052ff] border border-[#8052ff]/20 rounded font-semibold uppercase tracking-wide">
+                          <span className="px-1.5 py-0.5 text-[9px] bg-plum-voltage/10 text-plum-voltage border border-plum-voltage/20 rounded font-semibold uppercase tracking-wide">
                             Upgrade Pro
                           </span>
                         </span>
@@ -1573,7 +1573,7 @@ export default function App() {
                 {/* Secure bottom overall */}
                 <div className="border-t border-white/8 pt-5 mt-5 flex justify-between items-center">
                   <span className="text-[12px] text-zinc-400 font-semibold uppercase tracking-wider">Total de Débito Seguro</span>
-                  <span className="text-[24px] font-mono font-bold text-[#8052ff]">
+                  <span className="text-[24px] font-mono font-bold text-plum-voltage">
                     R$ {upsellIncluded ? '144,00' : '97,00'}
                   </span>
                 </div>
@@ -1613,7 +1613,7 @@ export default function App() {
 
               {/* Downloading resources actions */}
               <div className="space-y-3.5">
-                <RippleButton className="w-full py-4 text-[12px] bg-[#8052ff]" onClick={() => alert('Parabéns! Baixando arquivo ZIP FotoSEO_Standard_Assets.zip com scripts offline.')}>
+                <RippleButton className="w-full py-4 text-[12px] bg-plum-voltage text-black hover:bg-[#ffe14f] font-bold" onClick={() => alert('Parabéns! Baixando arquivo ZIP FotoSEO_Standard_Assets.zip com scripts offline.')}>
                   Baixar Script FotoSEO Standard (.ZIP)
                 </RippleButton>
 
@@ -1653,7 +1653,7 @@ export default function App() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
           className={`px-3.5 py-2 rounded-[24px] text-[10px] font-semibold tracking-wider uppercase transition-all cursor-pointer ${
-            currentView === 'landing' ? 'bg-[#8052ff] text-white' : 'text-zinc-400 hover:text-white'
+            currentView === 'landing' ? 'bg-plum-voltage text-black font-bold' : 'text-zinc-400 hover:text-white'
           }`}
         >
           Landing Page
@@ -1664,7 +1664,7 @@ export default function App() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
           className={`px-3.5 py-2 rounded-[24px] text-[10px] font-semibold tracking-wider uppercase transition-all cursor-pointer ${
-            currentView === 'upsell' ? 'bg-[#8052ff] text-white' : 'text-zinc-400 hover:text-white'
+            currentView === 'upsell' ? 'bg-plum-voltage text-black font-bold' : 'text-zinc-400 hover:text-white'
           }`}
         >
           Página de Upsell
@@ -1690,7 +1690,7 @@ export default function App() {
                 href="https://bio.supremamidia.com.br" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="text-[#8052ff] hover:underline"
+                className="text-plum-voltage hover:underline"
               >
                 Suprema Mídia
               </a>
