@@ -34,6 +34,7 @@ import {
   Sparkles,
   Clock,
   ArrowUpRight,
+  ArrowUp,
   Info,
   CreditCard,
   Play,
@@ -460,6 +461,7 @@ export default function App() {
   // Navigation trigger background states
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   // New states for the multi-stage marketing funnel
   const [currentView, setCurrentView] = useState<'landing' | 'upsell' | 'downsell' | 'success'>('landing');
@@ -533,6 +535,7 @@ export default function App() {
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 60);
+      setShowScrollTop(window.scrollY > 400);
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -882,12 +885,6 @@ export default function App() {
                 Otimização inteligente de imagens para Google Maps
               </div>
 
-              {/* Dynamic live urgency alerts */}
-              <div className="mb-6 flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 animate-fade-up" style={{ animationDelay: '50ms' }}>
-                <ActiveViewersCounter />
-                <CountdownTimer />
-              </div>
-
               {/* H1 Headline display splits precisely onto 3 lines */}
               <h1 className="text-white font-[800] leading-[1.0] tracking-[-0.04em] mb-8 text-[32px] sm:text-[46px] lg:text-[58px] uppercase text-center md:text-left">
                 <span
@@ -897,13 +894,13 @@ export default function App() {
                   Injete GPS,
                 </span>
                 <span
-                  className="block animate-fade-up"
+                  className="block text-[#ffd200] italic font-bold animate-fade-up"
                   style={{ animationDelay: '200ms' }}
                 >
                   tags e metadados
                 </span>
                 <span
-                  className="block animate-fade-up text-plum-voltage font-black"
+                  className="block text-white animate-fade-up"
                   style={{ animationDelay: '300ms' }}
                 >
                   e suba no Maps!
@@ -974,7 +971,9 @@ export default function App() {
               O Gargalo Invisível
             </span>
             <h2 className="text-[28px] md:text-[38px] font-bold text-white tracking-[-0.03em] leading-[1.1] mb-5 uppercase text-center">
-              Por que suas fotos normais estão matando o seu posicionamento no Google?
+              <span className="block text-white">Por que suas fotos normais</span>
+              <span className="block text-[#ffd200] italic font-bold">estão matando o seu</span>
+              <span className="block text-white">posicionamento no Google?</span>
             </h2>
             <p className="text-white/90 font-medium text-[16px] leading-[1.6] text-justify md:text-center">
               O robô do Google não consegue enxergar rostos ou fachadas perfeitamente. Ele precisa de dados geográficos e tags ocultas codificados dentro de cada arquivo de imagem para comprovar a relevância local.
@@ -1015,7 +1014,9 @@ export default function App() {
               Praticidade Absoluta
             </span>
             <h2 className="text-[28px] md:text-[38px] font-bold text-white tracking-[-0.03em] leading-[1.1] uppercase text-center">
-              A FÓRMULA SIMPLES DE 3 PASSOS QUE TE COLOCA EM PRIMEIRO LUGAR NO GOOGLE MAPS
+              <span className="block text-white">A FÓRMULA SIMPLES DE 3 PASSOS</span>
+              <span className="block text-[#ffd200] italic font-bold">QUE TE COLOCA EM PRIMEIRO LUGAR</span>
+              <span className="block text-white">NO GOOGLE MAPS</span>
             </h2>
           </div>
 
@@ -1062,7 +1063,8 @@ export default function App() {
               Poder de Fogo Completo
             </span>
             <h2 className="text-[28px] md:text-[38px] font-bold text-white tracking-[-0.03em] leading-[1.1] uppercase text-center">
-              Tecnologia Completa para você Dominar a sua Cidade
+              <span className="block text-white">Tecnologia Completa para você</span>
+              <span className="block text-[#ffd200] italic font-bold">Dominar a sua Cidade</span>
             </h2>
           </div>
 
@@ -1103,7 +1105,9 @@ export default function App() {
               Comparativo Técnico
             </span>
             <h2 className="text-[26px] md:text-[34px] font-bold text-white tracking-[-0.03em] leading-[1.1] mb-5 uppercase text-center">
-              O ABISMO DE DIFERENÇA ENTRE QUEM VENDE MUITO E QUEM CONTINUA INVISÍVEL
+              <span className="block text-white">O ABISMO DE DIFERENÇA</span>
+              <span className="block text-[#ffd200] italic font-bold">ENTRE QUEM VENDE MUITO</span>
+              <span className="block text-white">E QUEM CONTINUA INVISÍVEL</span>
             </h2>
             <p className="text-white/95 font-[500] text-[15px] text-justify md:text-center">
               Veja a diferença marcante entre trabalhar de forma amadora versus injetar metadados geo-estruturados de extrema relevância local.
@@ -1165,7 +1169,8 @@ export default function App() {
               Sucesso Prático
             </span>
             <h2 className="text-[26px] md:text-[34px] font-bold text-white tracking-[-0.03em] leading-[1.1] uppercase text-center">
-              RESULTADOS REALMENTE INCRÍVEIS DE QUEM JÁ DOMINOU O GOOGLE MAPS
+              <span className="block text-white">RESULTADOS REALMENTE INCRÍVEIS</span>
+              <span className="block text-[#ffd200] italic font-bold">DE QUEM JÁ DOMINOU O GOOGLE MAPS</span>
             </h2>
           </div>
         </div>
@@ -1212,7 +1217,9 @@ export default function App() {
               Acesso Imediato
             </span>
             <h2 className="text-[26px] md:text-[34px] font-bold text-white tracking-[-0.03em] leading-[1.1] mb-5 uppercase text-center">
-              ADQUIRA AGORA O SEU ACESSO VITALÍCIO COM DESCONTO DE LANÇAMENTO EXCLUSIVO
+              <span className="block text-white">ADQUIRA AGORA O SEU ACESSO VITALÍCIO</span>
+              <span className="block text-[#ffd200] italic font-bold">COM DESCONTO DE LANÇAMENTO</span>
+              <span className="block text-white">EXCLUSIVO</span>
             </h2>
           </div>
 
@@ -1280,7 +1287,8 @@ export default function App() {
               Dúvidas Frequentes
             </span>
             <h2 className="text-[26px] md:text-[34px] font-bold text-white tracking-[-0.03em] leading-[1.1] uppercase text-center">
-              RESPOSTAS DIRETAS E 100% TRANSPARENTES PARA SUAS DÚVIDAS
+              <span className="block text-white">RESPOSTAS DIRETAS E 100% TRANSPARENTES</span>
+              <span className="block text-[#ffd200] italic font-bold">PARA SUAS DÚVIDAS</span>
             </h2>
           </div>
 
@@ -1327,8 +1335,8 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="text-center max-w-3xl mx-auto">
             <h2 className="text-[28px] sm:text-[42px] lg:text-[54px] font-[800] text-white tracking-[-0.03em] leading-[0.95] mb-10 uppercase text-center">
-              ENQUANTO VOCÊ PENSA,<br />
-              SEU CONCORRENTE JÁ INJETOU OUTRA FOTO!
+              <span className="block text-white">ENQUANTO VOCÊ PENSA,</span>
+              <span className="block text-[#ffd200] italic font-bold">SEU CONCORRENTE JÁ INJETOU OUTRA FOTO!</span>
             </h2>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
@@ -1390,7 +1398,9 @@ export default function App() {
                 Upgrade Imediato de Alta Conversão
               </span>
               <h1 className="text-[28px] sm:text-[44px] lg:text-[58px] font-bold text-white tracking-[-0.04em] leading-[1.0] mb-6 uppercase text-center md:text-left">
-                Domine o Google Maps totalmente e multiplique seu faturamento hoje!
+                <span className="block text-white">Domine o Google Maps totalmente</span>
+                <span className="block text-[#ffd200] italic font-bold">e multiplique seu faturamento</span>
+                <span className="block text-white">hoje!</span>
               </h1>
               <p className="text-[15px] sm:text-[17px] text-white leading-[1.6] max-w-2xl font-bold text-justify md:text-left">
                 Deseja acelerar seus resultados? Adicione o <strong className="text-[#ffd200]">FotoSEO Pro Accelerator Suite</strong> por uma fração insignificante do valor avulso e domine o ranking concorrente.
@@ -1615,7 +1625,8 @@ export default function App() {
                 🚨 Oportunidade Única de Resgate
               </span>
               <h1 className="text-[28px] sm:text-[44px] lg:text-[58px] font-black text-white tracking-[-0.04em] leading-[1.0] mb-6 uppercase text-center md:text-left">
-                Leve o FotoSEO Pro Accelerator por apenas R$ 27!
+                <span className="block text-white">Leve o FotoSEO Pro Accelerator</span>
+                <span className="block text-[#ffd200] italic font-bold">por apenas R$ 27!</span>
               </h1>
               <p className="text-[15px] sm:text-[17px] text-white leading-[1.6] max-w-3xl font-bold text-justify md:text-left">
                 Entendemos que você está hesitante. Por isso, decidimos liberar o <strong className="text-[#ffd200]">Acesso Completo ao FotoSEO Pro Accelerator Suite</strong> com um desconto surreal de resgate. Esta é a ÚLTIMA vez que você verá este preço.
@@ -1718,7 +1729,8 @@ export default function App() {
                 Transação Concluída com Sucesso
               </span>
               <h1 className="text-[36px] sm:text-[46px] font-bold tracking-tight leading-[1.1] text-white">
-                Seu acesso foi liberado!
+                <span className="block text-white">Seu acesso</span>
+                <span className="block text-[#ffd200] italic font-bold">foi liberado!</span>
               </h1>
               <p className="text-[14px] text-white font-medium mt-2">
                 O recibo estruturado foi enviado para seu e-mail de faturamento cadastrado.
@@ -1918,6 +1930,26 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Floating Transparent Watermark on Left Side (Scarcity & Live Views) */}
+      {currentView === 'landing' && (
+        <div className="fixed left-4 bottom-24 md:bottom-auto md:top-1/3 -translate-y-1/2 z-40 flex flex-col gap-3.5 pointer-events-auto max-w-[280px] opacity-[0.22] hover:opacity-100 focus-within:opacity-100 transition-opacity duration-500 scale-90 sm:scale-100 origin-left select-none">
+          <ActiveViewersCounter />
+          <CountdownTimer />
+        </div>
+      )}
+
+      {/* Voltar ao Topo (Back to Top) Button */}
+      {showScrollTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="fixed bottom-6 right-6 z-50 p-4 cursor-pointer rounded-full bg-[#ffd200] hover:bg-[#ffe14f] text-black shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 group font-bold uppercase tracking-wider text-[11px]"
+          title="Voltar ao topo"
+        >
+          <span className="hidden sm:inline">Voltar ao topo</span>
+          <ArrowUp className="w-5 h-5 group-hover:-translate-y-1 transition-transform text-black stroke-[3]" />
+        </button>
+      )}
     </div>
   );
 }
