@@ -1,0 +1,6 @@
+{
+  "name": "FotoSEO",
+  "description": "Premium landing page for FotoSEO, an image optimization tool for Google Maps and Google My Business with EXIF geofencing and metadata injection.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

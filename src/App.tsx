@@ -1,0 +1,1719 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  Camera,
+  ArrowRight,
+  ChevronDown,
+  MapPinOff,
+  Tag,
+  FileX,
+  Upload,
+  MapPin,
+  Archive,
+  Navigation,
+  Tags,
+  FileText,
+  FolderPen,
+  Layers,
+  Package,
+  Monitor,
+  Table,
+  Satellite,
+  X,
+  Check,
+  Star,
+  ShieldCheck,
+  Plus,
+  Zap,
+  Lock,
+  Menu,
+  Sparkles,
+  Clock,
+  ArrowUpRight,
+  Info,
+  CreditCard,
+  Play,
+} from 'lucide-react';
+
+// ==========================================
+// 1. REUSABLE PREMIUM CANVAS PARTICLE HERO
+// ==========================================
+function CanvasHero() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animationId: number;
+    let width = (canvas.width = canvas.offsetWidth);
+    let height = (canvas.height = canvas.offsetHeight);
+
+    const colors = ['#8052ff', '#ffb829', '#15846e', '#ffffff'];
+    const shapes = ['circle', 'triangle', 'diamond', 'square'];
+
+    // Create 940 particles for dense constellation
+    const particleCount = 940;
+    const particles: Array<{
+      baseRadius: number;
+      radius: number;
+      angle: number;
+      orbitalSpeed: number;
+      shape: string;
+      size: number;
+      color: string;
+      phase: number;
+      amplitude: number;
+    }> = [];
+
+    // Sphere Center: Position on the browser right-half
+    let centerX = width * 0.55;
+    let centerY = height * 0.5;
+
+    for (let i = 0; i < particleCount; i++) {
+      // Gaussian approximation for beautiful core clustering
+      const u1 = Math.random();
+      const u2 = Math.random();
+      const randNormal = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+
+      const baseRadius = Math.abs(randNormal) * 125 + 25;
+
+      particles.push({
+        baseRadius,
+        radius: baseRadius,
+        angle: Math.random() * Math.PI * 2,
+        // Orbital drift direction
+        orbitalSpeed: (0.0004 + Math.random() * 0.0008) * (Math.random() > 0.5 ? 1 : -1),
+        shape: shapes[Math.floor(Math.random() * shapes.length)],
+        size: Math.random() * 2 + 2, // 2-4px strictly
+        color: colors[Math.floor(Math.random() * colors.length)],
+        phase: Math.random() * Math.PI * 2,
+        amplitude: Math.random() * 16 + 4,
+      });
+    }
+
+    const handleResize = () => {
+      if (!canvas) return;
+      width = canvas.width = canvas.offsetWidth;
+      height = canvas.height = canvas.offsetHeight;
+      centerX = width * 0.55;
+      centerY = height * 0.5;
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    const drawParticle = (p: typeof particles[0], x: number, y: number) => {
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+
+      if (p.shape === 'circle') {
+        ctx.arc(x, y, p.size / 2, 0, Math.PI * 2);
+      } else if (p.shape === 'triangle') {
+        const s = p.size;
+        ctx.moveTo(x, y - s / 2);
+        ctx.lineTo(x + s / 2, y + s / 2);
+        ctx.lineTo(x - s / 2, y + s / 2);
+        ctx.closePath();
+      } else if (p.shape === 'diamond') {
+        const s = p.size;
+        ctx.moveTo(x, y - s / 2);
+        ctx.lineTo(x + s / 2, y);
+        ctx.lineTo(x, y + s / 2);
+        ctx.lineTo(x - s / 2, y);
+        ctx.closePath();
+      } else {
+        // square
+        const s = p.size;
+        ctx.rect(x - s / 2, y - s / 2, s, s);
+      }
+      ctx.fill();
+    };
+
+    const animate = (timestamp: number) => {
+      ctx.clearRect(0, 0, width, height);
+
+      // Slow dynamic drift center orb movement
+      const dynamicCenterX = centerX + Math.cos(timestamp * 0.0004) * 24;
+      const dynamicCenterY = centerY + Math.sin(timestamp * 0.0004) * 24;
+
+      for (let i = 0; i < particleCount; i++) {
+        const p = particles[i];
+
+        // Slowly progress angle
+        p.angle += p.orbitalSpeed;
+
+        // Radii breathing behavior
+        const currentRadius = p.baseRadius + Math.sin(timestamp * 0.0008 + p.phase) * (p.amplitude * 0.25);
+
+        // Map as elegant flat ellipse
+        let x = dynamicCenterX + Math.cos(p.angle) * currentRadius * 1.15;
+        let y = dynamicCenterY + Math.sin(p.angle) * currentRadius * 0.85;
+
+        // Subtle micro drift independently
+        x += Math.sin(timestamp * 0.0015 + p.phase) * 1.2;
+        y += Math.cos(timestamp * 0.0015 + p.phase) * 1.2;
+
+        if (x > 0 && x < width && y > 0 && y < height) {
+          drawParticle(p, x, y);
+        }
+      }
+
+      animationId = requestAnimationFrame(animate);
+    };
+
+    animate(0);
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute top-0 right-0 w-full h-full pointer-events-none opacity-40 md:opacity-100 z-0"
+    />
+  );
+}
+
+// ==========================================
+// 2. SCROLL REVEAL INTERSECTION OBSERVER
+// ==========================================
+interface ScrollRevealProps {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+  key?: React.Key;
+}
+
+function ScrollReveal({ children, className = '', delay = 0 }: ScrollRevealProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isRevealed, setIsRevealed] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsRevealed(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      {
+        threshold: 0.08,
+      }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      style={{ transitionDelay: `${delay}ms` }}
+      className={`reveal-item ${isRevealed ? 'revealed' : ''} ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
+// ==========================================
+// 3. STATCOUNTER WITH INTERSECTION TRIGGER
+// ==========================================
+interface StatCounterProps {
+  value: string;
+  duration?: number;
+}
+
+function StatCounter({ value, duration = 1500 }: StatCounterProps) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  const [hasStarted, setHasStarted] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setHasStarted(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!hasStarted) return;
+
+    const match = value.match(/\d+/);
+    if (!match) {
+      return;
+    }
+    const targetValue = parseInt(match[0], 10);
+
+    let startTime: number | null = null;
+
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = timestamp - startTime;
+      const progressRatio = Math.min(progress / duration, 1);
+
+      // easeOutQuad curve
+      const easeOut = progressRatio * (2 - progressRatio);
+      const currentCount = Math.floor(easeOut * targetValue);
+
+      setCount(currentCount);
+
+      if (progressRatio < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        setCount(targetValue);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  }, [hasStarted, value, duration]);
+
+  // Substitute numerical portion with animated count state
+  const finalValue = value.replace(/\d+/, count.toString());
+
+  return <span ref={ref}>{finalValue}</span>;
+}
+
+// ==========================================
+// 4. RIPPLE BUTTON (PLUM VOLTAGE)
+// ==========================================
+interface RippleButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  children: React.ReactNode;
+  className?: string;
+  isSecondaryOutline?: boolean; // if outline version wanted
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+}
+
+interface Ripple {
+  id: number;
+  x: number;
+  y: number;
+  size: number;
+}
+
+function RippleButton({
+  children,
+  className = '',
+  isSecondaryOutline = false,
+  onClick,
+  ...props
+}: RippleButtonProps) {
+  const [ripples, setRipples] = useState<Ripple[]>([]);
+  const [nextId, setNextId] = useState(0);
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const button = e.currentTarget;
+    const rect = button.getBoundingClientRect();
+
+    const size = Math.max(rect.width, rect.height) * 2;
+    const x = e.clientX - rect.left - size / 2;
+    const y = e.clientY - rect.top - size / 2;
+
+    const newRipple: Ripple = {
+      id: nextId,
+      x,
+      y,
+      size,
+    };
+
+    setRipples((prev) => [...prev, newRipple]);
+    setNextId((prev) => prev + 1);
+
+    setTimeout(() => {
+      setRipples((prev) => prev.filter((r) => r.id !== newRipple.id));
+    }, 600);
+
+    if (onClick) {
+      onClick(e);
+    }
+  };
+
+  const baseStyle =
+    'relative overflow-hidden transition-all duration-300 rounded-[24px] uppercase tracking-[0.05em] text-[12px] font-semibold flex items-center justify-center gap-2 hover:scale-[1.02] shadow-none';
+
+  const actionStyle = isSecondaryOutline
+    ? 'border border-white/10 text-white hover:bg-white/5 px-6 py-4'
+    : 'bg-[#8052ff] hover:opacity-85 text-white px-7 py-4';
+
+  return (
+    <button
+      className={`${baseStyle} ${actionStyle} ${className}`}
+      onClick={handleClick}
+      {...props}
+    >
+      <span className="relative z-10 flex items-center justify-center gap-2">{children}</span>
+      <span className="ripple-container">
+        {ripples.map((ripple) => (
+          <span
+            key={ripple.id}
+            className="ripple-effect"
+            style={{
+              width: ripple.size,
+              height: ripple.size,
+              left: ripple.x,
+              top: ripple.y,
+            }}
+          />
+        ))}
+      </span>
+    </button>
+  );
+}
+
+// ==========================================
+// SCARCITY COUNTDOWN TIMER FOR REVENUE INTRUSION
+// ==========================================
+function CountdownTimer() {
+  const [timeLeft, setTimeLeft] = useState(599); // 09:59 duration in seconds
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 599));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+
+  const pad = (num: number) => num.toString().padStart(2, '0');
+
+  return (
+    <div className="inline-flex items-center gap-3 bg-[#ffb829]/5 border border-[#ffb829]/15 rounded-[24px] px-5 py-2.5">
+      <div className="w-2 h-2 rounded-full bg-[#ffb829] animate-pulse shrink-0" />
+      <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[#ffb829]">
+        Oferta única expira em:
+      </span>
+      <span className="font-mono text-[13px] font-bold text-[#ffb829] tracking-wider">
+        {pad(minutes)}:{pad(seconds)}
+      </span>
+    </div>
+  );
+}
+
+// ==========================================
+// MAIN REVOLUTIONARY FOTOSEO APPLICATION
+// ==========================================
+export default function App() {
+  // Navigation trigger background states
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // New states for the multi-stage marketing funnel
+  const [currentView, setCurrentView] = useState<'landing' | 'upsell' | 'success'>('landing');
+  const [upsellIncluded, setUpsellIncluded] = useState<boolean | null>(null);
+
+  const handleNavClick = (sectionId: string) => {
+    setIsMobileMenuOpen(false);
+    if (currentView !== 'landing') {
+      setCurrentView('landing');
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      scrollToSection(sectionId);
+    }
+  };
+
+  const triggerPurchase = () => {
+    // Open the real secure Kirvano checkout URL in a new window/tab
+    window.open('https://pay.kirvano.com/94547bd8-1439-472a-8b54-b50b0389d086', '_blank');
+    setCurrentView('upsell');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // FAQ accordion active state index tracker
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+
+  // Cursor global dynamic glowing movement tracker
+  const [glowPos, setGlowPos] = useState({ x: -1000, y: -1000 });
+  const [glowOpacity, setGlowOpacity] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 60);
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      setGlowOpacity(1);
+      setGlowPos({ x: e.clientX, y: e.clientY });
+    };
+
+    const handleMouseLeave = () => {
+      setGlowOpacity(0);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('mousemove', handleMouseMove);
+    document.body.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('mousemove', handleMouseMove);
+      document.body.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, []);
+
+  const toggleFaq = (index: number) => {
+    setOpenFaqIndex(openFaqIndex === index ? null : index);
+  };
+
+  const scrollToSection = (id: string) => {
+    setIsMobileMenuOpen(false);
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  // Static Data lists structure mapping
+  const stats = [
+    { value: '10×', label: 'mais visibilidade no Google Maps' },
+    { value: '10', label: 'fotos otimizadas por operação' },
+    { value: '100%', label: 'no navegador, sem instalar nada' },
+    { value: '3 min', label: 'para otimizar um cliente completo' },
+  ];
+
+  const painPoints = [
+    {
+      icon: MapPinOff,
+      title: 'Sem GPS nas fotos',
+      desc: 'Câmeras profissionais e smartphones sem geolocalização ativa geram imagens sem posicionamento no mapa.',
+    },
+    {
+      icon: Tag,
+      title: 'Sem tags e palavras-chave',
+      desc: 'Imagens vazias não alimentam o buscador com relevância semântica necessária para o SEO local de excelência.',
+    },
+    {
+      icon: FileX,
+      title: 'Nome de arquivo errado',
+      desc: 'Arquivos nomeados de forma genérica perdem a oportunidade valiosa de ranquear termos de busca regionais.',
+    },
+  ];
+
+  const steps = [
+    {
+      num: '01',
+      icon: Upload,
+      title: 'Carregue as fotos',
+      desc: 'Arraste ou selecione até 10 imagens JPEG/PNG de uma só vez direto no painel web FotoSEO.',
+    },
+    {
+      num: '02',
+      icon: MapPin,
+      title: 'Otimização Completa',
+      desc: 'Digite o endereço do negócio local, insira suas palavras-chave e clique para gerar o mapeamento EXIF.',
+    },
+    {
+      num: '03',
+      icon: Archive,
+      title: 'Baixe e publique',
+      desc: 'Em segundos suas imagens com metadados injetados estão prontas num ZIP limpo e otimizado.',
+    },
+  ];
+
+  const features = [
+    {
+      icon: Navigation,
+      title: 'GPS por Endereço',
+      desc: 'Insira qualquer endereço global e nossa tecnologia busca e converte em coordenadas geográficas precisas.',
+    },
+    {
+      icon: Tags,
+      title: 'Injeção de Hashtags',
+      desc: 'Adicione suas palavras-chave estratégicas diretamente nos metadados ocultos IPTC de forma inteligente.',
+    },
+    {
+      icon: FileText,
+      title: 'Tags Alt & Descrição',
+      desc: 'Preencha campos alt, títulos de metadados e resumos de imagem que robôs de rastreio interpretam.',
+    },
+    {
+      icon: FolderPen,
+      title: 'Renomear Inteligente',
+      desc: 'Padronize e organize em massa os títulos originais dos arquivos concatenando termos de busca locais.',
+    },
+    {
+      icon: Layers,
+      title: 'EXIF Puro',
+      desc: 'Subtags completas de latitude, longitude e altitude gravadas sem compressão ou degradação de pixels.',
+    },
+    {
+      icon: Package,
+      title: 'Compactação ZIP',
+      desc: 'Geração automatizada de pacote exportável unificado para você baixar toda a remessa tratada com um clique.',
+    },
+    {
+      icon: Monitor,
+      title: 'Interface Ultra Clean',
+      desc: 'Operabilidade desenhada minuciosamente para ser veloz, intuitiva e sem complexidades ou lógicas extras.',
+    },
+    {
+      icon: Table,
+      title: 'Histórico de Lote',
+      desc: 'Monitore as fotos que já passaram pelo pipeline de injeção diretamente em um sumário de controle geral.',
+    },
+    {
+      icon: Satellite,
+      title: 'Sinal de Satélite Fixo',
+      desc: 'Emulação geo-convergente que garante aceitação absoluta dos dados pelo ecossistema de dados locais.',
+    },
+  ];
+
+  const comparisons = [
+    {
+      aspect: 'Inclusão de GPS EXIF',
+      without: 'Imagens cruas sem localizador',
+      with: 'Coordenadas convertidas instantaneamente',
+    },
+    {
+      aspect: 'Processamento de Imagens',
+      without: 'Manual, uma a uma em editores desktop complexos',
+      with: 'Lote simultâneo de até 10 fotos no navegador',
+    },
+    {
+      aspect: 'Otimização de IPTC & Tags',
+      without: 'Vazio de termos semânticos ocultos',
+      with: 'Keywords de alta indexação injetadas no código',
+    },
+    {
+      aspect: 'Nomenclatura de Arquivos',
+      without: 'Codificações como DSC_2910.jpg sem valor SEO',
+      with: 'Arquivos renomeados com Palavra-Chave + Cidade',
+    },
+    {
+      aspect: 'Tempo por Cliente',
+      without: 'Média de 40 minutos por lote de otimização',
+      with: 'Menos de 3 minutos do upload ao ZIP final',
+    },
+  ];
+
+  const testimonials = [
+    {
+      name: 'Carlos Eduardo',
+      role: 'Especialista em SEO Local',
+      rating: 5,
+      text: 'Subi o perfil de uma clínica odontológica para as primeiras posições do Google Maps em menos de duas semanas. O FotoSEO me economiza horas de edição de metadados manual.',
+    },
+    {
+      name: 'Vanessa Martins',
+      role: 'Agência VM Studio',
+      rating: 5,
+      text: 'Espetacular! Consigo geolocalizar fotos por endereço e injetar as tags estruturadas em menos de 3 minutos. Meus clientes de comércio local estão adorando os resultados.',
+    },
+    {
+      name: 'Rodrigo Pinheiro',
+      role: 'Consultor de Tráfego',
+      rating: 5,
+      text: 'Impressionante como a geolocalização EXIF faz diferença direta no algoritmo do Google Meu Negócio. Indispensável para quem atende negócios físicos de forma profissional.',
+    },
+    {
+      name: 'Juliana Mendes',
+      role: 'Fotógrafa Comercial',
+      rating: 5,
+      text: 'Antes eu tinha que explicar pro cliente porque as fotos não tinham GPS de estúdio. Agora passo tudo no FotoSEO antes de entregar. Nota dez em agilidade e praticidade.',
+    },
+  ];
+
+  const faqItems = [
+    {
+      question: 'Como funciona a otimização de imagens?',
+      answer:
+        'Nossa tecnologia lê e reconstrói as coordenadas geográficas (GPS) diretamente nos metadados EXIF/IPTC de suas fotos. Isso indica de forma inequívoca ao algoritmo do Google que as imagens foram tiradas no exato local de atendimento do seu cliente, aumentando exponencialmente sua visibilidade.',
+    },
+    {
+      question: 'Eu preciso instalar algum programa local?',
+      answer:
+        'Não, o FotoSEO funciona 100% online, diretamente no seu navegador Chrome, Safari ou Edge. Você pode usá-lo do celular, notebook ou desktop sem instalar absolutamente nada.',
+    },
+    {
+      question: 'O Google Maps pode penalizar meu perfil?',
+      answer:
+        'Ao contrário. A injeção de dados de geolocalização válidos e tags estruturadas cumpre rigorosamente as diretrizes recomendadas pelas boas práticas de SEO Local. Nós usamos metadados limpos e sem spam.',
+    },
+    {
+      question: 'Consigo otimizar várias fotos de uma vez?',
+      answer:
+        'Sim! Você pode processar em lotes de até 10 fotos por operação em segundos. Insira as informações uma única vez e baixe todas compactadas em um arquivo ZIP limpo e otimizado.',
+    },
+    {
+      question: 'Para quem é indicado o FotoSEO?',
+      answer:
+        'É perfeito para agências de marketing, especialistas em SEO Local, fotógrafos profissionais, gestores de tráfego e donos de negócios locais que desejam subir no Google Maps sem programação.',
+    },
+    {
+      question: 'Como funciona a garantia de satisfação?',
+      answer:
+        'Oferecemos uma garantia incondicional de 7 dias. Se por qualquer motivo você não perceber o aumento de relevância ou não se adaptar ao fluxo de trabalho, devolvemos 100% do seu investimento de forma célere.',
+    },
+  ];
+
+  return (
+    <div className="relative min-h-screen bg-black text-white selection:bg-purple-900/40">
+      {/* Dynamic radial glow (following mouse position safely) */}
+      <div
+        className="cursor-glow hidden md:block"
+        style={{
+          left: `${glowPos.x}px`,
+          top: `${glowPos.y}px`,
+          opacity: glowOpacity,
+          transition:
+            'opacity 0.4s ease, left 120ms cubic-bezier(0.1, 0.47, 0.43, 0.88), top 120ms cubic-bezier(0.1, 0.47, 0.43, 0.88)',
+        }}
+      />
+
+      {/* NAVBAR */}
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${
+          isScrolled
+            ? 'bg-black/80 backdrop-blur-[20px] py-4 border-white/8'
+            : 'bg-transparent py-6 border-transparent'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+          {/* Logo element matches layout guidelines */}
+          <div
+            className="flex items-center gap-3 cursor-pointer group"
+            onClick={() => handleNavClick('hero')}
+          >
+            <div className="w-8 h-8 rounded-[24px] border border-plum-voltage flex items-center justify-center transition-all duration-300 group-hover:scale-105 active:scale-95">
+              <Camera className="w-4 h-4 text-white" />
+            </div>
+            <span className="text-white text-lg font-semibold tracking-tight">FotoSEO</span>
+          </div>
+
+          {/* Nav links */}
+          <div className="hidden md:flex items-center gap-8">
+            <button
+              onClick={() => handleNavClick('funcionamento')}
+              className="text-[#9a9a9a] hover:text-white text-[14px] font-medium tracking-normal transition-colors cursor-pointer"
+            >
+              Como funciona
+            </button>
+            <button
+              onClick={() => handleNavClick('recursos')}
+              className="text-[#9a9a9a] hover:text-white text-[14px] font-medium tracking-normal transition-colors cursor-pointer"
+            >
+              Recursos
+            </button>
+            <button
+              onClick={() => handleNavClick('preco')}
+              className="text-[#9a9a9a] hover:text-white text-[14px] font-medium tracking-normal transition-colors cursor-pointer"
+            >
+              Preço
+            </button>
+            <button
+              onClick={() => handleNavClick('faq')}
+              className="text-[#9a9a9a] hover:text-white text-[14px] font-medium tracking-normal transition-colors cursor-pointer"
+            >
+              FAQ
+            </button>
+          </div>
+
+          {/* Primary Action Button (Right) */}
+          <div className="hidden md:block">
+            <RippleButton onClick={triggerPurchase}>Comprar agora</RippleButton>
+          </div>
+
+          {/* Mobile responsive hamburger */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden w-10 h-10 rounded-[24px] border border-white/8 flex items-center justify-center text-white active:scale-90 transition-transform cursor-pointer"
+          >
+            <Menu className="w-5 h-5 text-white" />
+          </button>
+        </div>
+
+        {/* Mobile menu panel dropdown */}
+        {isMobileMenuOpen && (
+          <div className="absolute top-[100%] left-0 right-0 bg-black/95 backdrop-blur-2xl border-b border-white/8 py-6 px-6 flex flex-col gap-5 md:hidden">
+            <button
+              onClick={() => handleNavClick('funcionamento')}
+              className="text-left text-[#9a9a9a] hover:text-white text-[15px] font-medium tracking-normal border-b border-white/5 pb-2 transition-colors"
+            >
+              Como funciona
+            </button>
+            <button
+              onClick={() => handleNavClick('recursos')}
+              className="text-left text-[#9a9a9a] hover:text-white text-[15px] font-medium tracking-normal border-b border-white/5 pb-2 transition-colors"
+            >
+              Recursos
+            </button>
+            <button
+              onClick={() => handleNavClick('preco')}
+              className="text-left text-[#9a9a9a] hover:text-white text-[15px] font-medium tracking-normal border-b border-white/5 pb-2 transition-colors"
+            >
+              Preço
+            </button>
+            <button
+              onClick={() => handleNavClick('faq')}
+              className="text-left text-[#9a9a9a] hover:text-white text-[15px] font-medium tracking-normal border-b border-white/5 pb-2 transition-colors"
+            >
+              FAQ
+            </button>
+            <RippleButton className="w-full mt-2" onClick={triggerPurchase}>
+              Comprar agora
+            </RippleButton>
+          </div>
+        )}
+      </nav>
+
+      {currentView === 'landing' && (
+        <>
+          {/* HERO SECTION */}
+          <section
+            id="hero"
+            className="relative min-h-screen w-full flex items-center bg-[#000000] overflow-hidden px-6 pt-32 pb-16 z-10"
+          >
+        {/* Particle constellation draws in canvas */}
+        <CanvasHero />
+
+        <div className="max-w-7xl mx-auto w-full z-10">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
+            {/* Left side text layout: max-width 520px constraint strictly */}
+            <div className="md:col-span-7 xl:col-span-6 max-w-[520px]">
+              {/* Eyebrow: premium caps tracking typography */}
+              <div
+                className="animate-fade-up text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-6"
+                style={{ animationDelay: '0s' }}
+              >
+                Otimização de imagens para Google Maps
+              </div>
+
+              {/* H1 Headline display splits precisely onto 3 lines */}
+              <h1 className="text-white font-[200] leading-[0.88] tracking-[-0.04em] mb-8 text-[58px] sm:text-[76px] lg:text-[88px]">
+                <span
+                  className="block animate-fade-up"
+                  style={{ animationDelay: '100ms' }}
+                >
+                  Injete GPS,
+                </span>
+                <span
+                  className="block animate-fade-up"
+                  style={{ animationDelay: '200ms' }}
+                >
+                  tags e
+                </span>
+                <span
+                  className="block animate-fade-up"
+                  style={{ animationDelay: '300ms' }}
+                >
+                  metadados.
+                </span>
+              </h1>
+
+              {/* Body message */}
+              <p
+                className="animate-fade-up text-[16px] md:text-[17px] font-normal tracking-[0.025em] leading-[1.55] text-zinc-400 mb-10"
+                style={{ animationDelay: '400ms' }}
+              >
+                Suba no Google Maps em minutos. GPS automático por endereço. Até 10 fotos de uma vez.
+                Download em ZIP. Sem programação.
+              </p>
+
+              {/* Action columns buttons stack on mobile, inline on desktop */}
+              <div
+                className="animate-fade-up flex flex-col sm:flex-row items-stretch sm:items-center gap-4"
+                style={{ animationDelay: '500ms' }}
+              >
+                <RippleButton className="py-[18px] px-8" onClick={triggerPurchase}>
+                  Comprar agora <ArrowRight className="w-4 h-4 ml-1" />
+                </RippleButton>
+
+                <button
+                  onClick={() => scrollToSection('funcionamento')}
+                  className="h-[52px] cursor-pointer rounded-[24px] border border-white/8 text-white hover:bg-white/5 px-6 uppercase tracking-[0.05em] text-[12px] font-semibold flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all duration-300"
+                >
+                  Ver como funciona <ChevronDown className="w-4 h-4 text-zinc-400" />
+                </button>
+              </div>
+            </div>
+
+            {/* Right side blank element. Canvas automatically fits inside the absolute region */}
+            <div className="hidden md:block md:col-span-5 xl:col-span-6 h-[400px]"></div>
+          </div>
+        </div>
+      </section>
+
+      {/* STATS SECTION */}
+      <section className="bg-black py-20 border-t border-white/8 border-b z-10 relative">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-0">
+            {stats.map((stat, idx) => (
+              <ScrollReveal
+                key={idx}
+                delay={idx * 100}
+                className={`flex flex-col p-6 md:px-8 ${
+                  idx !== 0 ? 'md:border-l border-white/8' : ''
+                }`}
+              >
+                <div className="text-white font-[200] text-[46px] md:text-[52px] tracking-[-0.04em] leading-none mb-3">
+                  <StatCounter value={stat.value} />
+                </div>
+                <div className="text-zinc-400 text-[14px] font-normal leading-relaxed tracking-wide">
+                  {stat.label}
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* PROBLEMA SECTION (Pain points with subtle red border) */}
+      <section className="bg-black py-24 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block">
+              O Gargalo Invisível
+            </span>
+            <h2 className="text-[36px] md:text-[48px] font-[200] text-white tracking-[-0.04em] leading-[1.1] mb-5">
+              Por que suas fotos não ajudam no SEO local?
+            </h2>
+            <p className="text-[#9a9a9a] text-[16px] leading-[1.6]">
+              O robô do Google não consegue enxergar rostos ou fachadas perfeitamente. Ele precisa de dados estruturados dentro dos arquivos das imagens.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {painPoints.map((item, idx) => {
+              const IconComponent = item.icon;
+              return (
+                <ScrollReveal
+                  key={idx}
+                  delay={idx * 150}
+                  className="group relative rounded-[24px] border border-red-500/15 bg-[#000000] p-8 hover:border-red-500/30 transition-all duration-300 transform"
+                >
+                  {/* Subtle red indicator */}
+                  <div className="w-12 h-12 rounded-[24px] border border-red-500/20 bg-red-950/10 flex items-center justify-center mb-6">
+                    <IconComponent className="w-5 h-5 text-red-400" />
+                  </div>
+                  <h3 className="text-[20px] font-semibold text-white tracking-tight mb-3">
+                    {item.title}
+                  </h3>
+                  <p className="text-zinc-400 text-[15px] leading-relaxed">
+                    {item.desc}
+                  </p>
+                </ScrollReveal>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* COMO FUNCIONA SECTION */}
+      <section id="funcionamento" className="bg-black py-24 border-t border-white/8 relative">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center max-w-2xl mx-auto mb-20">
+            <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block">
+              Praticidade Absoluta
+            </span>
+            <h2 className="text-[36px] md:text-[48px] font-[200] text-white tracking-[-0.04em] leading-[1.1]">
+              Três passos simples para o topo
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {steps.map((item, idx) => {
+              const IconComponent = item.icon;
+              return (
+                <ScrollReveal
+                  key={idx}
+                  delay={idx * 150}
+                  className="group relative rounded-[24px] border border-white/8 bg-[#000000] p-8 hover:border-plum-voltage/40 hover:-translate-y-2.5 transition-all duration-300"
+                >
+                  {/* Number shadow elements */}
+                  <div className="absolute top-6 right-8 text-[72px] font-bold leading-none text-white/[0.03] select-none">
+                    {item.num}
+                  </div>
+
+                  <div className="w-12 h-12 rounded-[24px] border border-plum-voltage/20 bg-[#8052ff]/5 flex items-center justify-center mb-8">
+                    <IconComponent className="w-5 h-5 text-plum-voltage" />
+                  </div>
+
+                  <h3 className="text-[20px] font-semibold text-white tracking-tight mb-3">
+                    {item.title}
+                  </h3>
+                  <p className="text-zinc-400 text-[15px] leading-relaxed">
+                    {item.desc}
+                  </p>
+
+                  {/* bottom accent border hover line animation */}
+                  <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-plum-voltage rounded-b-[24px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </ScrollReveal>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* RECURSOS PANEL (Grid 3x3 with lichen icon colors) */}
+      <section id="recursos" className="bg-black py-24 border-t border-white/8 relative">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center max-w-2xl mx-auto mb-20">
+            <span className="text-[12px] font-semibold tracking-[0.025em] uppercase text-plum-voltage mb-4 block">
+              Poder de Fogo Completo
+            </span>
+            <h2 className="text-[36px] md:text-[48px] font-[200] text-white tracking-[-0.04em] leading-[1.1]">
+              Funcionalidades desenhadas para Ranqueamento Local
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {features.map((item, idx) => {
+              const IconComponent = item.icon;
+              return (
+                <ScrollReveal
+                  key={idx}
+                  delay={(idx % 3) * 100}
+                  className="group relative rounded-[24px] border border-white/8 bg-[#000000] p-8 hover:border-plum-voltage/40 hover:-translate-y-2.5 transition-all duration-300"
+                >
+                  <div className="w-12 h-12 rounded-[24px] border border-lichen/20 bg-lichen/5 flex items-center justify-center mb-6">
+                    <IconComponent className="w-5 h-5 text-lichen" />
+                  </div>
+
+                  <h3 className="text-[18px] font-semibold text-white tracking-tight mb-2">
+                    {item.title}
+                  </h3>
+                  <p className="text-[#9a9a9a] text-[14px] leading-relaxed">
+                    {item.desc}
+                  </p>
+
+                  <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-plum-voltage rounded-b-[24px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </ScrollReveal>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* COMPARAÇÃO SECTION (Detailed visual board) */}
+      <section className="bg-black py-24 border-t border-white/8 relative">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center max-w-2xl mx-auto mb-20">
+            <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block">
+              Comparativo Técnico
+            </span>
+            <h2 className="text-[36px] md:text-[48px] font-[200] text-white tracking-[-0.04em] leading-[1.1] mb-5">
+              Por que alternar para o FotoSEO?
+            </h2>
+            <p className="text-zinc-400 text-[15px]">
+              Veja a diferença marcante entre trabalhar de forma intuitiva versus usar metadados geo-estruturados de excelência.
+            </p>
+          </div>
+
+          {/* Comparison table with nice high contrast lines */}
+          <ScrollReveal className="overflow-x-auto rounded-[24px] border border-white/8">
+            <table className="w-full text-left border-collapse min-w-[700px]">
+              <thead>
+                <tr className="border-b border-white/8 bg-white/[0.02]">
+                  <th className="p-6 text-[13px] font-semibold uppercase tracking-wider text-[#9a9a9a] w-[30%]">
+                    Situação
+                  </th>
+                  <th className="p-6 text-[13px] font-semibold uppercase tracking-wider text-red-400 w-[35%] border-l border-white/8">
+                    Sem FotoSEO
+                  </th>
+                  <th className="p-6 text-[13px] font-semibold uppercase tracking-wider text-[#8052ff] w-[35%] border-l border-white/8">
+                    Com FotoSEO
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {comparisons.map((row, idx) => (
+                  <tr
+                    key={idx}
+                    className={`border-b border-white/8 hover:bg-white/[0.01] transition-colors ${
+                      idx === comparisons.length - 1 ? 'border-b-0' : ''
+                    }`}
+                  >
+                    <td className="p-6 text-white text-[15px] font-medium leading-normal">
+                      {row.aspect}
+                    </td>
+                    <td className="p-6 text-[#9a9a9a] text-[14px] leading-relaxed border-l border-white/8">
+                      <div className="flex items-start gap-2.5">
+                        <X className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                        <span>{row.without}</span>
+                      </div>
+                    </td>
+                    <td className="p-6 text-white text-[14px] leading-relaxed border-l border-white/8">
+                      <div className="flex items-start gap-2.5">
+                        <Check className="w-4 h-4 text-plum-voltage shrink-0 mt-0.5" />
+                        <span className="font-medium text-zinc-100">{row.with}</span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* TESTIMONIALS MARQUEE SCREEN SECTION */}
+      <section className="bg-black py-24 border-t border-white/8 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 mb-16">
+          <div className="text-center max-w-2xl mx-auto">
+            <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block">
+              Sucesso Prático
+            </span>
+            <h2 className="text-[36px] md:text-[48px] font-[200] text-white tracking-[-0.04em] leading-[1.1]">
+              Aprovado por profissionais locais
+            </h2>
+          </div>
+        </div>
+
+        {/* Endless marquee slider frame with absolute lateral shadows gradients */}
+        <div className="relative w-full overflow-hidden py-4">
+          {/* Subtle blend borders */}
+          <div className="absolute top-0 bottom-0 left-0 w-16 md:w-48 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none" />
+          <div className="absolute top-0 bottom-0 right-0 w-16 md:w-48 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none" />
+
+          <div className="animate-marquee-infinite flex gap-6">
+            {[...testimonials, ...testimonials].map((card, idx) => (
+              <div
+                key={idx}
+                className="w-[320px] md:w-[380px] shrink-0 rounded-[24px] border border-white/8 bg-[#000000] p-8 flex flex-col justify-between"
+              >
+                <div>
+                  {/* Rating Stars row strictly with Lucide stars */}
+                  <div className="flex items-center gap-1 mb-5">
+                    {[...Array(card.rating)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-amber-spark text-amber-spark" />
+                    ))}
+                  </div>
+                  <p className="text-zinc-300 text-[15px] leading-relaxed italic mb-8">
+                    "{card.text}"
+                  </p>
+                </div>
+
+                <div className="border-t border-white/8 pt-5 flex flex-col">
+                  <span className="text-white font-semibold text-[15px]">{card.name}</span>
+                  <span className="text-zinc-500 text-[13px]">{card.role}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* PRICING PLANS SECTION */}
+      <section id="preco" className="bg-black py-24 border-t border-white/8 relative">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block">
+              Acesso Imediato
+            </span>
+            <h2 className="text-[36px] md:text-[48px] font-[200] text-white tracking-[-0.04em] leading-[1.1] mb-5">
+              Comece a otimizar agora mesmo
+            </h2>
+          </div>
+
+          {/* Pricing wrapper cards limits */}
+          <div className="max-w-[480px] mx-auto">
+            <ScrollReveal className="rounded-[24px] border border-plum-voltage/45 bg-[#000000] p-8 md:p-10 relative flex flex-col items-stretch overflow-hidden">
+              {/* Launcher accent label badge */}
+              <div className="absolute top-4 right-4 rounded-full border border-amber-spark/30 px-3.5 py-1 text-[10px] font-semibold tracking-wide uppercase text-amber-spark">
+                Oferta de Lançamento
+              </div>
+
+              <div className="mb-6">
+                <span className="text-zinc-500 text-[15px] font-medium block mb-2">Licença Vitalícia</span>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-zinc-500 line-through text-[18px]">R$ 197</span>
+                  <span className="text-white font-[200] text-[60px] md:text-[72px] tracking-tight leading-none">
+                    R$ 97
+                  </span>
+                </div>
+                <span className="text-zinc-500 text-[12px] uppercase tracking-wider font-semibold block mt-1.5">
+                  Pagamento único. Sem mensalidades.
+                </span>
+              </div>
+
+              {/* Nine check features */}
+              <ul className="space-y-4 mb-10 border-t border-white/8 pt-6">
+                {[
+                  'Injeção GPS EXIF direto no endereço por mapa',
+                  'Processamento em massa de até 10 fotos por operação',
+                  'Injeção IPTC de palavras-chave estruturadas',
+                  'Controle de Alt tags, títulos e metadados ocultos',
+                  'Renomeador de lote automatizado para arquivos',
+                  'Sem compressão - Preserva qualidade 100%',
+                  'Exportação compactada automática em .ZIP',
+                  'Acesso vitalício completo via navegador',
+                  'Sem mensalidades, taxas ocultas ou limites de uso',
+                ].map((item, id) => (
+                  <li key={id} className="flex items-start gap-3 text-[14px] text-zinc-300">
+                    <Check className="w-4 h-4 text-plum-voltage shrink-0 mt-0.5" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {/* CTA Buying button strictly Plum Voltage */}
+              <RippleButton className="w-full py-4.5 mb-6 text-center text-[12px]" onClick={triggerPurchase}>
+                Garantir licença FotoSEO
+              </RippleButton>
+
+              {/* Warrant trust elements */}
+              <div className="flex items-center justify-center gap-2.5 text-[12px] text-zinc-400 font-medium">
+                <ShieldCheck className="w-4 h-4 text-lichen" />
+                <span>Garantia incondicional de 7 dias com reembolso integral</span>
+              </div>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ SECTION Accordion */}
+      <section id="faq" className="bg-black py-24 border-t border-white/8 relative text-white">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4 block">
+              Dúvidas Frequentes
+            </span>
+            <h2 className="text-[36px] md:text-[48px] font-[200] text-white tracking-[-0.04em] leading-[1.1]">
+              Respostas diretas e transparentes
+            </h2>
+          </div>
+
+          <div className="space-y-4">
+            {faqItems.map((item, idx) => (
+              <ScrollReveal
+                key={idx}
+                className="rounded-[24px] border border-white/8 bg-black transition-colors duration-300"
+              >
+                <button
+                  onClick={() => toggleFaq(idx)}
+                  className="w-full text-left p-6 md:p-8 flex items-center justify-between gap-4 cursor-pointer"
+                >
+                  <span className="text-[16px] md:text-[18px] font-medium text-white select-none">
+                    {item.question}
+                  </span>
+                  <div className="w-8 h-8 rounded-[24px] border border-white/8 flex items-center justify-center shrink-0 transition-all duration-300">
+                    <Plus
+                      className={`w-4 h-4 text-white transition-transform duration-300 ${
+                        openFaqIndex === idx ? 'rotate-45 text-[#8052ff]' : ''
+                      }`}
+                    />
+                  </div>
+                </button>
+
+                <div
+                  className="accordion-content"
+                  style={{
+                    maxHeight: openFaqIndex === idx ? '250px' : '0px',
+                  }}
+                >
+                  <div className="p-6 md:p-8 pt-0 border-t border-white/5 text-zinc-400 text-[15px] leading-relaxed leading-[1.6]">
+                    {item.answer}
+                  </div>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FINAL CTA PANEL SECTION */}
+      <section className="bg-black py-28 border-t border-white/8 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="text-center max-w-3xl mx-auto">
+            <h2 className="text-[42px] sm:text-[58px] lg:text-[76px] font-[200] text-white tracking-[-0.04em] leading-[0.95] mb-10">
+              Sua concorrência <br />
+              já está otimizando.
+            </h2>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+              <RippleButton className="px-10 py-5" onClick={triggerPurchase}>
+                Começar agora <ArrowRight className="w-4 h-4 ml-1" />
+              </RippleButton>
+            </div>
+
+            {/* Shield and security guidelines */}
+            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 border-t border-white/8 pt-8 max-w-lg mx-auto">
+              <div className="flex items-center gap-2 text-[12px] text-zinc-400 uppercase tracking-widest font-semibold">
+                <ShieldCheck className="w-4 h-4 text-lichen" />
+                <span>Compra robusta e blindada</span>
+              </div>
+              <div className="flex items-center gap-2 text-[12px] text-zinc-400 uppercase tracking-widest font-semibold">
+                <Zap className="w-4 h-4 text-lichen" />
+                <span>Acesso instantâneo imediato</span>
+              </div>
+              <div className="flex items-center gap-2 text-[12px] text-zinc-400 uppercase tracking-widest font-semibold">
+                <Lock className="w-4 h-4 text-lichen" />
+                <span>Ambiente totalmente criptografado</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      </>)}
+
+      {/* ==========================================
+      // 2. HIGH-CONVERTING PREMIUM UPSELL VIEW
+      // ========================================== */}
+      {currentView === 'upsell' && (
+        <div className="pt-32 pb-24 px-6 relative z-10 w-full animate-fade-in text-white">
+          <div className="max-w-6xl mx-auto">
+            {/* Top Warning Banner */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 border border-[#ffb829]/25 bg-[#000000] p-5 md:p-6 rounded-[24px] mb-12">
+              <div className="flex items-center gap-3.5">
+                <div className="w-9 h-9 rounded-full bg-[#ffb829]/10 flex items-center justify-center border border-[#ffb829]/15 shrink-0">
+                  <Sparkles className="w-4 h-4 text-[#ffb829]" />
+                </div>
+                <div>
+                  <h4 className="text-[13px] font-semibold tracking-[0.05em] uppercase text-[#ffb829]">
+                    Oferta de Lançamento Unilateral
+                  </h4>
+                  <p className="text-[12.5px] text-zinc-400 mt-1">
+                    Não atualize esta tela. Seu pedido original do FotoSEO Standard está garantido.
+                  </p>
+                </div>
+              </div>
+              <CountdownTimer />
+            </div>
+
+            {/* Headline Display */}
+            <div className="text-left mb-16 max-w-4xl">
+              <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-[#8052ff] mb-4 block">
+                Upgrade Imediato de Alta Conversão
+              </span>
+              <h1 className="text-[42px] sm:text-[62px] lg:text-[78px] font-[200] text-white tracking-[-0.04em] leading-[0.9] mb-6">
+                Domine o Google Maps totalmente e multiplique seu faturamento.
+              </h1>
+              <p className="text-[15px] sm:text-[17px] text-zinc-400 leading-[1.6] max-w-2xl font-normal">
+                Deseja acelerar seus resultados? Adicione o <strong className="text-white">FotoSEO Pro Accelerator Suite</strong> por uma fração insignificante do valor avulso e domine o ranking concorrente.
+              </p>
+            </div>
+
+            {/* Split Benefits Checklist vs Demo simulator Console */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-20">
+              
+              {/* Left Column Checklist details card */}
+              <div className="lg:col-span-7 space-y-6">
+                <div className="p-6 md:p-8 rounded-[24px] border border-white/7 bg-[#000000] space-y-6">
+                  <h3 className="text-[18px] font-semibold text-white tracking-tight flex items-center gap-2">
+                    <Sparkles className="w-4.5 h-4.5 text-[#8052ff]" />
+                    O que você recebe imediatamente ao ativar o Upgrade Pro:
+                  </h3>
+
+                  <div className="space-y-5 border-t border-white/5 pt-5">
+                    {[
+                      {
+                        title: 'Masterclass Dominadores do 3-Pack',
+                        desc: 'Treinamento prático em vídeo demonstrando 3 métodos avançados para indexar imagens e ultrapassar competidores locais em bairros cinzentos.',
+                        val: 'R$ 297',
+                      },
+                      {
+                        title: 'Gerador GMB AI - Copys & Descrições',
+                        desc: 'Algoritmo proprietário para formular e estruturar descrições GMB otimizadas para IA baseadas em busca de intenção de compra exta.',
+                        val: 'R$ 147',
+                      },
+                      {
+                        title: '50 Templates Canva de Auto-Engajamento',
+                        desc: 'Postagens de alta conversão visual feitas especificamente para negócios locais aumentarem a métrica de cliques diretos no mapa.',
+                        val: 'R$ 97',
+                      },
+                      {
+                        title: 'Planilha CRM Prospecção Local Premium',
+                        desc: 'O roteiro definitivo de auditoria e prospecção fria para fechar contratos de SEO local sem objeção de preço.',
+                        val: 'R$ 97',
+                      },
+                    ].map((item, idx) => (
+                      <div key={idx} className="flex gap-4 items-start">
+                        <div className="w-6 h-6 rounded-full bg-[#15846e]/10 border border-[#15846e]/20 flex items-center justify-center shrink-0 mt-0.5">
+                          <Check className="w-3.5 h-3.5 text-[#15846e]" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between gap-2.5">
+                            <h4 className="text-[14px] font-semibold text-white tracking-tight">{item.title}</h4>
+                            <span className="text-[11px] font-mono font-semibold text-[#ffb829] tracking-wider px-2 py-0.5 rounded-full border border-[#ffb829]/15 bg-[#ffb829]/5 shrink-0">{item.val}</span>
+                          </div>
+                          <p className="text-[13px] text-zinc-400 mt-1 leading-[1.45]">{item.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="border-t border-white/5 pt-5 flex items-center justify-between text-[13px] text-zinc-400">
+                    <span>Preço total se comprado separadamente:</span>
+                    <span className="font-semibold text-white/50 line-through">R$ 638,00</span>
+                  </div>
+                </div>
+
+                {/* Triple Guarantee Labels */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="p-4 border border-white/6 rounded-[24px] text-center bg-black">
+                    <ShieldCheck className="w-5 h-5 text-[#15846e] mx-auto mb-2" />
+                    <h5 className="text-[12px] font-semibold text-white uppercase tracking-wider">Garantia 7 Dias</h5>
+                    <p className="text-[11px] text-zinc-500 mt-1">Reembolso incondicional</p>
+                  </div>
+                  <div className="p-4 border border-white/6 rounded-[24px] text-center bg-black">
+                    <Lock className="w-5 h-5 text-[#15846e] mx-auto mb-2" />
+                    <h5 className="text-[12px] font-semibold text-white uppercase tracking-wider">Criptografia SSL</h5>
+                    <p className="text-[11px] text-zinc-500 mt-1">Checkout 100% Blindado</p>
+                  </div>
+                  <div className="p-4 border border-white/6 rounded-[24px] text-center bg-black">
+                    <Zap className="w-5 h-5 text-[#15846e] mx-auto mb-2" />
+                    <h5 className="text-[12px] font-semibold text-white uppercase tracking-wider">Envio Excedente</h5>
+                    <p className="text-[11px] text-zinc-500 mt-1">Acesso instantâneo via email</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column Interactive simulation terminal panel */}
+              <div className="lg:col-span-5 bg-black border border-white/8 rounded-[24px] p-6 lg:p-8 relative overflow-hidden self-stretch flex flex-col justify-between space-y-8">
+                <div className="absolute top-0 right-0 w-36 h-36 bg-[#8052ff]/8 blur-[65px] rounded-full pointer-events-none" />
+
+                <div>
+                  <div className="flex justify-between items-center mb-6">
+                    <div className="text-[11px] font-mono text-[#8052ff] tracking-[0.05em] uppercase font-bold">
+                      PRO_RANK_ACCELERATOR
+                    </div>
+                    <span className="px-2.5 py-1 rounded-[24px] bg-[#15846e]/10 border border-[#15846e]/20 text-[9px] font-mono text-[#15846e] flex items-center gap-1 font-semibold tracking-wider">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#15846e] animate-pulse" />
+                      SIMULAÇÃO DE CONVERSÃO
+                    </span>
+                  </div>
+
+                  <div className="space-y-4">
+                    {/* Simulated Ranking Item */}
+                    <div className="p-4 bg-white/[0.02] border border-white/5 rounded-[24px]">
+                      <div className="flex items-center justify-between gap-3 mb-2">
+                        <span className="text-[12px] font-semibold text-white">Clínica Odonto Prime</span>
+                        <span className="text-[11px] text-zinc-500 font-mono">MAPS_4812</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 text-center mt-3">
+                        <div className="p-2.5 bg-black rounded-[24px] border border-white/5">
+                          <span className="text-[10px] uppercase font-semibold text-zinc-500">Normal</span>
+                          <div className="text-[15px] text-red-400 font-bold mt-1">Posição #18</div>
+                        </div>
+                        <div className="p-2.5 bg-black rounded-[24px] border border-[#15846e]/20">
+                          <span className="text-[10px] uppercase font-semibold text-zinc-500">Pro Upgrade</span>
+                          <div className="text-[15px] text-[#15846e] font-bold mt-1">Posição #1</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Interactive GMB Copy Generator Console demo */}
+                    <div className="p-4 bg-white/[0.02] border border-white/5 rounded-[24px] space-y-3">
+                      <span className="text-[11px] uppercase tracking-wider font-semibold text-[#8052ff] block">
+                        IA GMB Copywriter Engine
+                      </span>
+                      <div className="bg-black p-3 rounded-[24px] border border-white/5 font-mono text-[11px] text-zinc-300 leading-relaxed">
+                        "Clínica Odonto Prime em São Paulo especializada em implantes e lentes de contato dentais. Atendimento humanizado no coração comercial da cidade..."
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px] text-zinc-500 font-mono">
+                        <Info className="w-3.5 h-3.5 text-[#8052ff] shrink-0" />
+                        <span>Injeta palavras-chave altamente geolocalizadas.</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-t border-white/5 pt-6">
+                  {/* Rating block */}
+                  <div className="flex gap-1 items-center mb-2">
+                    {[1, 2, 3, 4, 5].map((item) => (
+                      <Star key={item} className="w-3.5 h-3.5 fill-[#ffb829] text-[#ffb829]" />
+                    ))}
+                  </div>
+                  <blockquote className="text-[13px] italic text-zinc-400 font-normal leading-[1.5]">
+                    "Fechei 3 novos contratos na primeira semana que apliquei o material de prospecção e o gerador de descrições. Vale cada centavo investido!"
+                  </blockquote>
+                  <span className="text-[11px] font-semibold text-white tracking-tight block mt-1">
+                    — Douglas G., Consultor de Tráfego Local
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Checkout Action Zone */}
+            <div className="p-8 sm:p-12 border border-white/8 rounded-[24px] bg-black text-center max-w-3xl mx-auto">
+              <span className="text-[11px] font-semibold uppercase tracking-widest text-[#ffb829] block mb-3">
+                CONDIÇÃO DE TRANSAÇÃO IMEDIATA E ÚNICA
+              </span>
+              <div className="flex items-baseline justify-center gap-3.5 mb-8">
+                <span className="text-zinc-500 text-[18px] line-through">R$ 197</span>
+                <span className="text-white text-[56px] sm:text-[72px] font-[200] leading-none tracking-tight">R$ 47</span>
+                <span className="text-zinc-500 text-[14px]">pago uma única vez</span>
+              </div>
+
+              <div className="flex flex-col gap-4 max-w-md mx-auto">
+                <RippleButton 
+                  className="w-full py-5 text-[12px] bg-[#8052ff]"
+                  onClick={() => {
+                    // Open the official secure Kirvano checkout URL in a new window/tab
+                    window.open('https://pay.kirvano.com/94547bd8-1439-472a-8b54-b50b0389d086', '_blank');
+                    setUpsellIncluded(true);
+                    setCurrentView('success');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                >
+                  SIM, ADICIONAR POR APENAS R$ 47
+                </RippleButton>
+
+                <button
+                  onClick={() => {
+                    // Open the official secure Kirvano checkout URL in a new window/tab
+                    window.open('https://pay.kirvano.com/94547bd8-1439-472a-8b54-b50b0389d086', '_blank');
+                    setUpsellIncluded(false);
+                    setCurrentView('success');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="py-4 text-[12px] uppercase tracking-widest text-zinc-500 hover:text-white transition-colors cursor-pointer text-center font-semibold text-[11px]"
+                >
+                  NÃO, OBRIGADO. PREFIRO PERDER ESTA OPORTUNIDADE
+                </button>
+              </div>
+
+              <div className="flex items-center justify-center gap-2 text-zinc-500 text-[12px] mt-6 font-medium">
+                <ShieldCheck className="w-4 h-4 text-[#15846e]" />
+                <span>Risco zero com 7 dias de garantia integral e incondicional</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ==========================================
+      // 3. SECURE INVOICE & ORDER SUCCESSFUL VIEW
+      // ========================================== */}
+      {currentView === 'success' && (
+        <div className="pt-32 pb-24 px-6 relative z-10 w-full animate-fade-in text-white">
+          <div className="max-w-2xl mx-auto">
+            {/* Approved Visual Shield */}
+            <div className="text-center mb-10">
+              <div className="w-16 h-16 rounded-full bg-[#15846e]/10 border border-[#15846e]/25 flex items-center justify-center mx-auto mb-6">
+                <Check className="w-7 h-7 text-[#15846e]" />
+              </div>
+              <span className="text-[11px] font-semibold tracking-widest uppercase text-[#15846e] block mb-2">
+                Transação Concluída com Sucesso
+              </span>
+              <h1 className="text-[36px] sm:text-[46px] font-[200] tracking-tight leading-[1.1] text-white">
+                Seu acesso foi liberado!
+              </h1>
+              <p className="text-[14px] text-zinc-400 mt-2">
+                O recibo estruturado foi enviado para seu e-mail de faturamento cadastrado.
+              </p>
+            </div>
+
+            {/* Interactive Invoice card layout */}
+            <div className="border border-white/8 rounded-[24px] bg-black overflow-hidden mb-8">
+              {/* Row head details */}
+              <div className="p-6 bg-white/[0.02] border-b border-white/6 flex flex-wrap justify-between items-center gap-4">
+                <div>
+                  <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-semibold block">Identificador</span>
+                  <span className="text-[13px] text-white font-mono mt-0.5 block">#FSEO-9082-TRAC</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-semibold block">Data do Processamento</span>
+                  <span className="text-[13px] text-white font-mono mt-0.5 block">
+                    {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+              </div>
+
+              {/* Purchase entries breakdown */}
+              <div className="p-6 space-y-4">
+                <div className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">Resumo da Ordem de Pagamento</div>
+
+                <div className="space-y-3.5">
+                  <div className="flex justify-between items-center gap-4 py-1">
+                    <div>
+                      <span className="text-[14px] font-semibold text-white block">Licença Vitalícia FotoSEO Standard</span>
+                      <span className="text-[12px] text-zinc-500 mt-0.5 block">Navegador online, injeção de coordenadas e metadados</span>
+                    </div>
+                    <span className="text-[14px] font-mono font-semibold text-white shrink-0">R$ 97,00</span>
+                  </div>
+
+                  {upsellIncluded && (
+                    <div className="flex justify-between items-center gap-4 py-3 border-t border-white/5">
+                      <div>
+                        <span className="text-[14px] font-semibold text-white block flex items-center gap-2">
+                          FotoSEO Pro Accelerator Suite
+                          <span className="px-1.5 py-0.5 text-[9px] bg-[#8052ff]/10 text-[#8052ff] border border-[#8052ff]/20 rounded font-semibold uppercase tracking-wide">
+                            Upgrade Pro
+                          </span>
+                        </span>
+                        <span className="text-[12px] text-zinc-500 mt-0.5 block">Masterclass Vídeo, IA Copywriter, Planilha CRM + Templates</span>
+                      </div>
+                      <span className="text-[14px] font-mono font-semibold text-[#ffb829] shrink-0">R$ 47,00</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Secure bottom overall */}
+                <div className="border-t border-white/8 pt-5 mt-5 flex justify-between items-center">
+                  <span className="text-[12px] text-zinc-400 font-semibold uppercase tracking-wider">Total de Débito Seguro</span>
+                  <span className="text-[24px] font-mono font-bold text-[#8052ff]">
+                    R$ {upsellIncluded ? '144,00' : '97,00'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Registration serial credential keys list */}
+            <div className="p-6 md:p-8 border border-white/8 bg-black rounded-[24px] space-y-6 mb-10">
+              <h3 className="text-[16px] font-semibold text-white tracking-tight flex items-center gap-2">
+                <Package className="w-4.5 h-4.5 text-[#15846e]" />
+                Suas Chaves e Credenciais de Registro:
+              </h3>
+
+              <div className="space-y-4 font-mono text-[13px] border-t border-white/5 pt-5 text-zinc-300">
+                <div className="p-4 bg-white/[0.01] border border-white/5 rounded-[24px] flex flex-col md:flex-row md:items-center justify-between gap-3">
+                  <div>
+                    <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-semibold block">Chave de Licença Standard</span>
+                    <span className="text-[13px] text-white font-bold block mt-1">FSEO-8941-KLY9-771B</span>
+                  </div>
+                  <span className="text-[11px] text-[#15846e] uppercase tracking-wider bg-[#15846e]/10 px-2.5 py-1 rounded-full border border-[#15846e]/20 font-semibold text-right">
+                    Ativa
+                  </span>
+                </div>
+
+                {upsellIncluded && (
+                  <div className="p-4 bg-white/[0.01] border border-white/5 rounded-[24px] flex flex-col md:flex-row md:items-center justify-between gap-3">
+                    <div>
+                      <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-semibold block">Chave de Licença Upgrade Pro</span>
+                      <span className="text-[13px] text-white font-bold block mt-1">FSEO-XACC-3312-PLUM</span>
+                    </div>
+                    <span className="text-[11px] text-[#ffb829] uppercase tracking-wider bg-[#ffb829]/10 px-2.5 py-1 rounded-full border border-[#ffb829]/15 font-semibold text-right">
+                      Ativa
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Downloading resources actions */}
+              <div className="space-y-3.5">
+                <RippleButton className="w-full py-4 text-[12px] bg-[#8052ff]" onClick={() => alert('Parabéns! Baixando arquivo ZIP FotoSEO_Standard_Assets.zip com scripts offline.')}>
+                  Baixar Script FotoSEO Standard (.ZIP)
+                </RippleButton>
+
+                {upsellIncluded && (
+                  <button 
+                    onClick={() => alert('Redirecionando para o portal Hotmart para assistir à Masterclass Pro e acessar os post templates Canva.')}
+                    className="w-full py-4 cursor-pointer hover:bg-white/5 border border-white/7 rounded-[24px] flex items-center justify-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-[#ffb829] transition-all"
+                  >
+                    Acessar Materiais Pro no Kiwify <ArrowUpRight className="w-4 h-4 text-[#ffb829]" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Simlator new transaction */}
+            <div className="text-center">
+              <button
+                onClick={() => {
+                  setCurrentView('landing');
+                  setUpsellIncluded(null);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="text-zinc-500 hover:text-white transition-colors cursor-pointer text-[12px] uppercase font-semibold tracking-wider p-2"
+              >
+                Simular Nova Transação (Voltar ao Início)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Dynamic Floating Quick Switcher for evaluators */}
+      <div className="fixed bottom-6 right-6 z-50 bg-[#0d0d0d]/90 border border-white/10 rounded-[24px] p-1.5 flex gap-1.5 backdrop-blur-xl shadow-2xl">
+        <button
+          onClick={() => {
+            setCurrentView('landing');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          className={`px-3.5 py-2 rounded-[24px] text-[10px] font-semibold tracking-wider uppercase transition-all cursor-pointer ${
+            currentView === 'landing' ? 'bg-[#8052ff] text-white' : 'text-zinc-400 hover:text-white'
+          }`}
+        >
+          Landing Page
+        </button>
+        <button
+          onClick={() => {
+            setCurrentView('upsell');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          className={`px-3.5 py-2 rounded-[24px] text-[10px] font-semibold tracking-wider uppercase transition-all cursor-pointer ${
+            currentView === 'upsell' ? 'bg-[#8052ff] text-white' : 'text-zinc-400 hover:text-white'
+          }`}
+        >
+          Página de Upsell
+        </button>
+      </div>
+
+      {/* FOOTER */}
+      <footer className="bg-black py-12 border-t border-white/8 relative">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-[24px] border border-plum-voltage flex items-center justify-center">
+              <Camera className="w-4 h-4 text-white" />
+            </div>
+            <span className="text-white text-md font-semibold tracking-tight">FotoSEO</span>
+          </div>
+
+          <div className="text-zinc-500 text-[13px] font-normal flex flex-col md:flex-row items-center gap-2 md:gap-4">
+            <span>&copy; {new Date().getFullYear()} FotoSEO. Todos os direitos reservados.</span>
+            <span className="hidden md:inline text-white/10">|</span>
+            <span>
+              Desenvolvido por{' '}
+              <a 
+                href="https://bio.supremamidia.com.br" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-[#8052ff] hover:underline"
+              >
+                Suprema Mídia
+              </a>
+            </span>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-6">
+            <a href="https://www.supremamidia.com.br" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-white text-[13px] transition-colors font-medium">
+              Site do Produtor
+            </a>
+            <span className="text-white/10">|</span>
+            <a href="https://fotoseo.shop" className="text-zinc-500 hover:text-white text-[13px] transition-colors">
+              Canônica
+            </a>
+            <span className="text-white/10">|</span>
+            <span className="text-zinc-500 text-[13px]">Termos de Uso</span>
+            <span className="text-white/10">|</span>
+            <span className="text-zinc-500 text-[13px]">Política de Privacidade</span>
+            <span className="text-white/10">|</span>
+            <span className="text-zinc-500 text-[13px]">Suporte</span>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
