@@ -73,8 +73,10 @@ function CanvasHero() {
       amplitude: number;
     }> = [];
 
-    // Sphere Center: Position on the browser right-half
-    let centerX = width * 0.55;
+    // Sphere Center: Positioned beautifully relative to the grid
+    let centerX = width >= 768 
+      ? (width > 1280 ? ((width - 1280) / 2) + 1280 * 0.72 : width * 0.72) 
+      : width * 0.5;
     let centerY = height * 0.5;
 
     for (let i = 0; i < particleCount; i++) {
@@ -103,7 +105,15 @@ function CanvasHero() {
       if (!canvas) return;
       width = canvas.width = canvas.offsetWidth;
       height = canvas.height = canvas.offsetHeight;
-      centerX = width * 0.55;
+      if (width >= 768) {
+        if (width > 1280) {
+          centerX = ((width - 1280) / 2) + 1280 * 0.72;
+        } else {
+          centerX = width * 0.72;
+        }
+      } else {
+        centerX = width * 0.5;
+      }
       centerY = height * 0.5;
     };
 
@@ -1318,7 +1328,7 @@ export default function App() {
                 {/* Inner Video frame */}
                 <div className="relative w-full h-full rounded-[32px] overflow-hidden bg-[#090909] z-10">
                   <iframe
-                    src="https://www.youtube.com/embed/8NJ1GPAyOg0?autoplay=1&mute=1&loop=1&playlist=8NJ1GPAyOg0&controls=1&modestbranding=1&rel=0&iv_load_policy=3"
+                    src="https://www.youtube.com/embed/fz55dnArH8M?autoplay=1&mute=1&loop=1&playlist=fz55dnArH8M&controls=1&modestbranding=1&rel=0&iv_load_policy=3"
                     title="Como Funciona o FotoSEO"
                     className="w-full h-full object-cover rounded-[32px]"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
