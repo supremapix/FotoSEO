@@ -538,6 +538,102 @@ function FloatingWatermarkAlerts() {
 }
 
 // ==========================================
+// INTERACTIVE ANIMATED LOGO COMPONENT
+// ==========================================
+interface InteractiveLogoProps {
+  size?: 'sm' | 'lg' | 'xl';
+  className?: string;
+}
+
+function InteractiveLogo({ size = 'sm', className = '' }: InteractiveLogoProps) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
+
+  const handleClick = () => {
+    setIsClicked(true);
+    setTimeout(() => setIsClicked(false), 800);
+  };
+
+  const ringStyles = {
+    sm: {
+      outerMargin: '-4px',
+      innerMargin: '-7px',
+      containerSize: 'w-8 h-8',
+    },
+    lg: {
+      outerMargin: '-6px',
+      innerMargin: '-10px',
+      containerSize: 'w-16 h-16',
+    },
+    xl: {
+      outerMargin: '-8px',
+      innerMargin: '-14px',
+      containerSize: 'w-[84px] h-[84px]',
+    }
+  };
+
+  const currentStyles = ringStyles[size];
+
+  return (
+    <div
+      className={`relative flex items-center justify-center cursor-pointer select-none ${className}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={handleClick}
+    >
+      {/* Primary spinning glowing charging borders (t={#ffd200}, r=emerald-400) */}
+      <div
+        className={`absolute inset-0 rounded-full border-2 border-transparent border-t-[#ffd200] border-r-emerald-400 transition-all duration-300 ${
+          isClicked
+            ? 'animate-spin scale-125 border-t-pink-500 border-r-indigo-400'
+            : isHovered
+              ? 'animate-[spin_0.8s_linear_infinite] scale-110 shadow-[0_0_25px_rgba(255,210,0,0.65)]'
+              : 'animate-[spin_2.2s_linear_infinite]'
+        }`}
+        style={{
+          padding: '2px',
+          margin: currentStyles.outerMargin,
+        }}
+      />
+      {/* Outer second reverse ring for a beautiful high-tech, high-conversion charging look */}
+      <div
+        className={`absolute inset-0 rounded-full border border-transparent border-b-[#ffd200]/40 border-l-emerald-400/40 transition-all duration-500 ${
+          isClicked
+            ? 'animate-[spin_0.4s_linear_infinite_reverse]'
+            : isHovered
+              ? 'animate-[spin_1.2s_linear_infinite_reverse] scale-105 opacity-100'
+              : 'animate-[spin_3.5s_linear_infinite_reverse] opacity-50'
+        }`}
+        style={{
+          padding: '2px',
+          margin: currentStyles.innerMargin,
+        }}
+      />
+
+      {/* Main logo image */}
+      <div
+        className={`relative ${currentStyles.containerSize} rounded-full overflow-hidden bg-black/80 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all duration-500 shadow-2xl ${
+          isClicked
+            ? 'scale-90 rotate-12'
+            : isHovered
+              ? 'scale-105 shadow-[inset_0_0_12px_rgba(255,255,255,0.3)]'
+              : ''
+        }`}
+      >
+        <img
+          src="https://img.fotoseo.shop/foto-seo.webp"
+          alt="FotoSEO Logo"
+          className={`w-full h-full object-cover transition-transform duration-700 select-none ${
+            isHovered ? 'scale-110 rotate-3' : 'scale-100'
+          }`}
+          referrerPolicy="no-referrer"
+        />
+      </div>
+    </div>
+  );
+}
+
+// ==========================================
 // HERO TYPEWRITER CONVERTER LOGIC (NEUROMARKETING)
 // ==========================================
 interface PhraseItem {
@@ -946,9 +1042,7 @@ export default function App() {
             className="flex items-center gap-3 cursor-pointer group"
             onClick={() => handleNavClick('hero')}
           >
-            <div className="w-8 h-8 rounded-[24px] border border-plum-voltage flex items-center justify-center transition-all duration-300 group-hover:scale-105 active:scale-95">
-              <Camera className="w-4 h-4 text-white" />
-            </div>
+            <InteractiveLogo size="sm" />
             <span className="text-white text-lg font-semibold tracking-tight">FotoSEO</span>
           </div>
 
@@ -1042,10 +1136,15 @@ export default function App() {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
             {/* Left side text layout: max-width 520px constraint strictly */}
             <div className="md:col-span-7 xl:col-span-6 max-w-[520px] text-center md:text-left">
+              {/* Highlight Featured Interactive Logo (Neuromarketing Highlight) */}
+              <div className="flex justify-center md:justify-start mb-6 animate-fade-up" style={{ animationDelay: '0s' }}>
+                <InteractiveLogo size="xl" className="hover:scale-105 transition-all duration-300" />
+              </div>
+
               {/* Eyebrow: premium caps tracking typography */}
               <div
                 className="animate-fade-up text-[11px] sm:text-[13px] font-extrabold tracking-[0.12em] uppercase mb-5 flex flex-col gap-1 text-center md:text-left"
-                style={{ animationDelay: '0s' }}
+                style={{ animationDelay: '100ms' }}
               >
                 <span className="text-[#ffd200]">Otimização inteligente de imagens</span>
                 <span className="text-emerald-400">especialmente para atrair clientes do Google Maps</span>
@@ -1055,19 +1154,19 @@ export default function App() {
               <h1 className="text-white font-[800] leading-[1.0] tracking-[-0.04em] mb-8 text-[32px] sm:text-[46px] lg:text-[58px] uppercase text-center md:text-left">
                 <span
                   className="block animate-fade-up"
-                  style={{ animationDelay: '100ms' }}
+                  style={{ animationDelay: '200ms' }}
                 >
                   Injete GPS,
                 </span>
                 <span
                   className="block text-[#ffd200] italic font-bold animate-fade-up"
-                  style={{ animationDelay: '200ms' }}
+                  style={{ animationDelay: '300ms' }}
                 >
                   tags e metadados
                 </span>
                 <span
                   className="block text-white animate-fade-up"
-                  style={{ animationDelay: '300ms' }}
+                  style={{ animationDelay: '400ms' }}
                 >
                   e suba no Maps!
                 </span>
@@ -1076,7 +1175,7 @@ export default function App() {
               {/* Body message with dynamic neuromarketing typewriter logic */}
               <div
                 className="animate-fade-up mb-10 text-center md:text-left"
-                style={{ animationDelay: '400ms' }}
+                style={{ animationDelay: '500ms' }}
               >
                 <HeroTypewriter />
               </div>
@@ -1084,7 +1183,7 @@ export default function App() {
               {/* Action columns buttons stack on mobile, inline on desktop */}
               <div
                 className="animate-fade-up flex flex-col sm:flex-row items-stretch sm:items-center justify-center md:justify-start gap-4"
-                style={{ animationDelay: '500ms' }}
+                style={{ animationDelay: '600ms' }}
               >
                 <RippleButton className="py-[18px] px-8" onClick={triggerPurchase}>
                   Comprar agora <ArrowRight className="w-4 h-4 ml-1" />
@@ -1102,6 +1201,66 @@ export default function App() {
             {/* Right side blank element. Canvas automatically fits inside the absolute region */}
             <div className="hidden md:block md:col-span-5 xl:col-span-6 h-[400px]"></div>
           </div>
+        </div>
+      </section>
+
+      {/* IMAGEM EM DESTAQUE EXPLICATIVA - ANTES E DEPOIS (PROVA VISUAL DE ALTA CONVERSÃO) */}
+      <section className="bg-[#030303] py-12 sm:py-16 border-t border-b border-white/5 relative overflow-hidden z-10">
+        <div className="max-w-5xl mx-auto px-6">
+          <ScrollReveal delay={100} className="text-center mb-8">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#ffd200]/10 border border-[#ffd200]/20 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-[#ffd200] mb-4">
+              ⚡ PROVA VISUAL DE ALTA INDEXAÇÃO
+            </span>
+            <h2 className="text-[22px] sm:text-[32px] font-extrabold text-white tracking-tight uppercase leading-tight mb-3 text-center">
+              A Diferença que Coloca sua Empresa na <span className="text-emerald-400">Posição #1</span>
+            </h2>
+            <p className="text-zinc-400 max-w-2xl mx-auto text-[13px] sm:text-[15px] font-medium leading-relaxed text-center">
+              Veja abaixo como o robô de inteligência geográfica do Google lê uma foto normal vs. uma foto otimizada pelo <strong className="text-white">FotoSEO</strong>.
+            </p>
+          </ScrollReveal>
+
+          <ScrollReveal delay={200} className="relative mx-auto max-w-4xl rounded-2xl overflow-hidden border border-white/10 bg-black/40 p-2 sm:p-3 shadow-[0_0_50px_rgba(255,210,0,0.05)]">
+            {/* Visual Accent Glows */}
+            <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-48 h-48 bg-rose-500/10 rounded-full blur-[80px] pointer-events-none" />
+            <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-48 h-48 bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none" />
+            
+            {/* Headers inside the presentation card */}
+            <div className="grid grid-cols-2 gap-2 text-center py-2 sm:py-3 mb-2 border-b border-white/5 text-[10px] sm:text-[12px] font-bold tracking-widest uppercase">
+              <div className="text-rose-500 flex items-center justify-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping hidden sm:inline" />
+                FOTO COMUM (INVISÍVEL)
+              </div>
+              <div className="text-emerald-400 flex items-center justify-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse hidden sm:inline" />
+                FOTO COM FOTOSEO (RANKER)
+              </div>
+            </div>
+
+            <div className="relative rounded-xl overflow-hidden bg-zinc-950">
+              <img
+                src="https://img.fotoseo.shop/antes-depois-fotoseo.webp"
+                alt="Comparativo Antes e Depois FotoSEO - Injeção de metadados geotagging EXIF e IPTC para Google Maps"
+                className="w-full h-auto object-cover select-none transition-transform duration-700 hover:scale-[1.01]"
+                referrerPolicy="no-referrer"
+                loading="lazy"
+              />
+              
+              {/* Watermark scanlines or overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
+            </div>
+
+            {/* Micro neuromarketing details at bottom of image */}
+            <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4 px-2 text-[11px] text-zinc-500 font-mono">
+              <div className="flex items-center gap-1.5 text-center sm:text-left">
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                <span>Injetor de Coordenadas Ativo de Alta Precisão</span>
+              </div>
+              <div className="flex items-center gap-3 justify-center">
+                <span>Exif 2.32 Compliant</span>
+                <span className="text-emerald-400 font-bold">100% SEGURO PARA O GOOGLE</span>
+              </div>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
