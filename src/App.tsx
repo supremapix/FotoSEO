@@ -41,6 +41,67 @@ import {
 } from 'lucide-react';
 
 // ==========================================
+// 0. INTERACTIVE PORTABLE 9:16 VIDEO PLAYER
+// ==========================================
+function VideoPlayer916() {
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  return (
+    <div className="relative w-full h-full rounded-[32px] overflow-hidden bg-[#090909] z-10 flex flex-col items-center justify-center">
+      {isPlaying ? (
+        <iframe
+          src="https://www.youtube.com/embed/fz55dnArH8M?autoplay=1&mute=0&rel=0&modestbranding=1&controls=1"
+          title="Como Funciona o FotoSEO"
+          className="w-full h-full object-cover rounded-[32px]"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+          referrerPolicy="no-referrer"
+        />
+      ) : (
+        <button
+          onClick={() => setIsPlaying(true)}
+          className="relative w-full h-full group flex flex-col items-center justify-center cursor-pointer overflow-hidden p-6"
+        >
+          {/* Cover image from youtube */}
+          <div className="absolute inset-0 z-0">
+            <img
+              src="https://img.youtube.com/vi/fz55dnArH8M/hqdefault.jpg"
+              alt="Capa do Vídeo FotoSEO"
+              className="w-full h-full object-cover opacity-50 scale-105 group-hover:scale-110 group-hover:opacity-75 transition-all duration-500"
+              referrerPolicy="no-referrer"
+            />
+            {/* Dark vignette overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black z-10" />
+          </div>
+
+          {/* Glowing Play Ring in the center */}
+          <div className="relative z-20 flex flex-col items-center gap-4 text-center">
+            {/* Outer scale pulse ring */}
+            <div className="relative w-20 h-20 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center animate-pulse group-hover:scale-110 transition-transform duration-300">
+              <div className="w-14 h-14 rounded-full bg-emerald-500 hover:bg-emerald-400 flex items-center justify-center transition-colors shadow-[0_0_24px_rgba(16,185,129,0.5)]">
+                <Play className="w-6 h-6 text-black fill-black ml-1" />
+              </div>
+            </div>
+
+            <div className="space-y-1.5 px-4">
+              <span className="text-[#ffd200] font-extrabold text-[12px] uppercase tracking-wider block bg-black/60 px-3 py-1 rounded-full border border-white/5 backdrop-blur-sm">
+                Assistir Vídeo (1 min)
+              </span>
+              <h3 className="text-white text-[16px] leading-snug font-black uppercase tracking-tight text-shadow">
+                Como Funciona o FotoSEO
+              </h3>
+              <p className="text-zinc-300 text-[11px] font-semibold tracking-wide">
+                Toque para iniciar a demonstração prática
+              </p>
+            </div>
+          </div>
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ==========================================
 // 1. REUSABLE PREMIUM CANVAS PARTICLE HERO
 // ==========================================
 function CanvasHero() {
@@ -485,65 +546,89 @@ function ActiveViewersCounter() {
 // FLOATING WATERMARK ALERTS SYSTEM
 // ==========================================
 function FloatingWatermarkAlerts() {
-  const [activeAlert, setActiveAlert] = useState(0); // 0 = Viewers, 1 = Countdown, 2 = spots left, 3 = senior-friendly proof
-  const [isVisible, setIsVisible] = useState(true);
+  const [activeAlert, setActiveAlert] = useState(0); // 0 = Viewers, 1 = Countdown, 2 = Spots, 3 = Age group proof
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    // Initial entrance from bottom
+    const timerIntro = setTimeout(() => {
+      setIsVisible(true);
+    }, 1200);
+
+    // Dynamic message cycler
     const interval = setInterval(() => {
       setIsVisible(false);
-
       const timer = setTimeout(() => {
         setActiveAlert((prev) => (prev + 1) % 4);
         setIsVisible(true);
-      }, 1000);
-
+      }, 700);
       return () => clearTimeout(timer);
     }, 9000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearTimeout(timerIntro);
+      clearInterval(interval);
+    };
   }, []);
 
   return (
     <div
-      className={`fixed left-4 bottom-28 md:bottom-auto md:top-1/3 -translate-y-1/2 z-40 flex flex-col gap-2.5 pointer-events-auto max-w-[310px] select-none transition-all duration-1000 ${
-        isVisible ? 'opacity-[0.65] translate-x-0' : 'opacity-0 -translate-x-12'
-      } hover:opacity-100 focus-within:opacity-100 scale-85 sm:scale-100 origin-left`}
+      className={`fixed left-4 md:left-6 bottom-[108px] md:bottom-6 z-40 flex flex-col gap-1.5 pointer-events-auto max-w-[320px] select-none transition-all duration-700 ease-out ${
+        isVisible ? 'opacity-60 translate-y-0 scale-[0.8] md:scale-90' : 'opacity-0 translate-y-6 scale-[0.75]'
+      } hover:opacity-100 focus-within:opacity-100 origin-bottom-left`}
     >
-      <div className="flex items-center gap-1.5 px-3 py-1 bg-black/60 backdrop-blur-md rounded-full border border-white/5 w-fit">
-        <span className="w-1.5 h-1.5 rounded-full bg-[#ffd200] animate-pulse" />
-        <span className="text-[9px] font-bold uppercase tracking-widest text-[#ffd200]/40 hover:text-[#ffd200] transition-colors">
-          Alerta de Escassez em Tempo Real
+      {/* Tiny Badge Indicator */}
+      <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-black/40 backdrop-blur-sm rounded-full border border-white/5 w-fit ml-2">
+        <span className="w-1 h-1 rounded-full bg-[#ffd200] animate-pulse" />
+        <span className="text-[8px] font-bold uppercase tracking-wider text-zinc-400">
+          FotoSEO Ativo
         </span>
       </div>
 
       {activeAlert === 0 && (
-        <ActiveViewersCounter />
+        <div className="inline-flex items-center gap-2 p-2 bg-black/50 backdrop-blur-md border border-white/5 rounded-full text-white text-[11px] font-medium shadow-md">
+          <span className="relative flex h-2 w-2 shrink-0 ml-1.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+          </span>
+          <span className="text-zinc-300 pr-2">
+            Mais de <strong className="text-red-400 font-bold">14 pessoas</strong> qualificadas lendo agora
+          </span>
+        </div>
       )}
 
       {activeAlert === 1 && (
-        <CountdownTimer />
-      )}
-
-      {activeAlert === 2 && (
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/20 rounded-full text-white text-[12px] font-semibold shadow-md">
-          <span className="relative flex h-2 w-2 shrink-0">
+        <div className="inline-flex items-center gap-2 p-2 bg-black/50 backdrop-blur-md border border-white/5 rounded-full text-white text-[11px] font-medium shadow-md">
+          <span className="relative flex h-2 w-2 shrink-0 ml-1.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
           </span>
-          <span className="text-zinc-200">
-            Apenas <strong className="text-[#ffd200]">7 licenças vitais</strong> com desconto hoje!
+          <span className="text-zinc-300 pr-2">
+            Oferta vital expira em menos de <strong className="text-[#ffd200] font-bold">10 minutos</strong>
+          </span>
+        </div>
+      )}
+
+      {activeAlert === 2 && (
+        <div className="inline-flex items-center gap-2 p-2 bg-black/50 backdrop-blur-md border border-white/5 rounded-full text-white text-[11px] font-medium shadow-md">
+          <span className="relative flex h-2 w-2 shrink-0 ml-1.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+          </span>
+          <span className="text-zinc-300 pr-2">
+            Apenas <strong className="text-[#ffd200] font-bold">7 licenças vitais</strong> hoje!
           </span>
         </div>
       )}
 
       {activeAlert === 3 && (
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-white text-[11px] font-semibold shadow-md">
-          <span className="relative flex h-2 w-2 shrink-0">
+        <div className="inline-flex items-center gap-2 p-2 bg-black/50 backdrop-blur-md border border-white/5 rounded-full text-white text-[11px] font-semibold shadow-md">
+          <span className="relative flex h-2 w-2 shrink-0 ml-1.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
-          <span className="text-zinc-200">
-            Mais de <strong className="text-emerald-400">1.430 idosos</strong> usando sem dificuldades!
+          <span className="text-zinc-200 pr-2">
+            Mais de <strong className="text-emerald-400 font-bold">1.430 idosos</strong> usando sem dificuldades!
           </span>
         </div>
       )}
@@ -1300,7 +1385,7 @@ export default function App() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
             {/* LADO ESQUERDO: SMARTPHONE MOCKUP 9:16 (ATENÇÃO TOTAL DO USUÁRIO) */}
-            <div className="lg:col-span-12 xl:col-span-5 flex flex-col items-center justify-center relative">
+            <div className="lg:col-span-5 flex flex-col items-center justify-center relative">
               {/* Floating micro indicators (neuromarketing trigger) */}
               <div className="absolute -top-6 -left-3 sm:-left-6 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-extrabold text-[10px] sm:text-[11px] tracking-widest uppercase px-3 py-1.5 rounded-full shadow-lg border border-emerald-400/30 flex items-center gap-1.5 animate-bounce z-20">
                 <span className="w-2 h-2 rounded-full bg-white animate-ping" />
@@ -1325,25 +1410,28 @@ export default function App() {
                 {/* Reflection Screen Layer */}
                 <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.03] to-white/0 pointer-events-none z-20" />
 
-                {/* Inner Video frame */}
-                <div className="relative w-full h-full rounded-[32px] overflow-hidden bg-[#090909] z-10">
-                  <iframe
-                    src="https://www.youtube.com/embed/fz55dnArH8M?autoplay=1&mute=1&loop=1&playlist=fz55dnArH8M&controls=1&modestbranding=1&rel=0&iv_load_policy=3"
-                    title="Como Funciona o FotoSEO"
-                    className="w-full h-full object-cover rounded-[32px]"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
+                {/* Inner Video frame using optimized 9:16 player components */}
+                <VideoPlayer916 />
               </div>
 
               {/* Laser Halo backline animation */}
               <div className="absolute inset-0 max-w-[320px] aspect-[9/16] -m-4 border border-[#ffd200]/25 rounded-[48px] animate-pulse pointer-events-none -z-10 bg-radial-gradient(ellipse_at_center,rgba(255,210,0,0.03)_0%,transparent_70%)" />
+              
+              {/* YouTube explicit native redirection assist button */}
+              <div className="mt-8 text-center max-w-[280px] sm:max-w-[310px] relative z-20">
+                <a 
+                  href="https://youtube.com/shorts/fz55dnArH8M"
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 bg-white/5 hover:bg-[#ffd200]/15 text-zinc-300 hover:text-[#ffd200] border border-white/10 hover:border-[#ffd200]/30 rounded-xl text-[11px] font-extrabold uppercase tracking-wider transition-all cursor-pointer shadow-md"
+                >
+                  Assistir no YouTube Shorts <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 hover:text-[#ffd200]" />
+                </a>
+              </div>
             </div>
 
             {/* LADO DIREITO: TEXTO EXPLICATIVO COM META DESCRIÇÃO E DETALHES DE ALTA CONVERSÃO */}
-            <div className="lg:col-span-12 xl:col-span-7 flex flex-col justify-center space-y-6 text-center lg:text-left max-w-2xl mx-auto xl:mx-0">
+            <div className="lg:col-span-7 flex flex-col justify-center space-y-6 text-center lg:text-left max-w-2xl mx-auto xl:mx-0">
               <ScrollReveal delay={100}>
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#ffd200]/10 border border-[#ffd200]/20 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-[#ffd200] mb-4">
                   🎥 DEMONSTRAÇÃO COMPLETA
@@ -1412,7 +1500,7 @@ export default function App() {
 
               <div className="pt-2 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <RippleButton className="py-[16px] px-8 text-[13px] uppercase tracking-wider font-extrabold" onClick={triggerPurchase}>
-                  COMEÇAR AGORA POR APENAS R$ 27 <ArrowRight className="w-4 h-4 ml-1.5" />
+                  COMEÇAR AGORA POR APENAS R$ 97 <ArrowRight className="w-4 h-4 ml-1.5" />
                 </RippleButton>
               </div>
             </div>
