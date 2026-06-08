@@ -538,6 +538,90 @@ function FloatingWatermarkAlerts() {
 }
 
 // ==========================================
+// HERO TYPEWRITER CONVERTER LOGIC (NEUROMARKETING)
+// ==========================================
+interface PhraseItem {
+  text: string;
+  colorClass: string;
+  badge: string;
+}
+
+const HERO_PHRASES: PhraseItem[] = [
+  {
+    text: "O FotoSEO é a ferramenta definitiva para colocar qualquer negócio no topo do Google Maps.",
+    colorClass: "text-[#ffd200] font-[800]",
+    badge: "✓ PASSO 1: DOMÍNIO LOCAL IMPLACÁVEL"
+  },
+  {
+    text: "Sem precisar programar ou saber nada de computação, ele injeta as coordenadas de GPS reais do seu endereço diretamente nas fotos.",
+    colorClass: "text-sky-400 font-[800]",
+    badge: "✓ PASSO 2: HARDWARE GEO-CODENING DIRECTO"
+  },
+  {
+    text: "Ele injeta palavras-chave secretas e descrições ricas direto nos arquivos ocultos IPTC das imagens, forçando o Google a destacar você.",
+    colorClass: "text-emerald-400 font-[800]",
+    badge: "✓ PASSO 3: METADADOS SECRETOS"
+  },
+  {
+    text: "O Google reconhece que a sua foto foi tirada no local de atendimento, alavancando sua empresa para a Posição #1 em poucos minutos!",
+    colorClass: "text-rose-450 text-[#ff4b8b] font-[800]",
+    badge: "✓ PASSO 4: RESULTADO IMEDIATO"
+  }
+];
+
+function HeroTypewriter() {
+  const [currentPhraseIdx, setCurrentPhraseIdx] = useState(0);
+  const [displayedText, setDisplayedText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    let timer: any;
+    const currentPhrase = HERO_PHRASES[currentPhraseIdx].text;
+    
+    if (!isDeleting) {
+      if (displayedText.length < currentPhrase.length) {
+        timer = setTimeout(() => {
+          setDisplayedText(currentPhrase.substring(0, displayedText.length + 1));
+        }, 18); // Fast, fluent typing speed for neuromarketing engagement
+      } else {
+        // Hold full phrase for readability
+        timer = setTimeout(() => {
+          setIsDeleting(true);
+        }, 4500);
+      }
+    } else {
+      if (displayedText.length > 0) {
+        timer = setTimeout(() => {
+          setDisplayedText(currentPhrase.substring(0, displayedText.length - 1));
+        }, 8); // Fast erase
+      } else {
+        setIsDeleting(false);
+        setCurrentPhraseIdx((prev) => (prev + 1) % HERO_PHRASES.length);
+      }
+    }
+
+    return () => clearTimeout(timer);
+  }, [displayedText, isDeleting, currentPhraseIdx]);
+
+  const currentPhraseObj = HERO_PHRASES[currentPhraseIdx];
+
+  return (
+    <div className="min-h-[160px] sm:min-h-[120px] flex flex-col gap-3 max-w-[520px] mx-auto md:mx-0">
+      <div className="flex items-center justify-center md:justify-start">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold uppercase tracking-wider text-zinc-300">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+          {currentPhraseObj.badge}
+        </span>
+      </div>
+      <p className={`text-[15px] sm:text-[16px] md:text-[18px] leading-[1.6] tracking-wide transition-colors duration-500 text-center md:text-left ${currentPhraseObj.colorClass}`}>
+        {displayedText}
+        <span className="animate-pulse ml-1 text-white border-r-2 border-white">&nbsp;</span>
+      </p>
+    </div>
+  );
+}
+
+// ==========================================
 // MAIN REVOLUTIONARY FOTOSEO APPLICATION
 // ==========================================
 export default function App() {
@@ -960,10 +1044,11 @@ export default function App() {
             <div className="md:col-span-7 xl:col-span-6 max-w-[520px] text-center md:text-left">
               {/* Eyebrow: premium caps tracking typography */}
               <div
-                className="animate-fade-up text-[12px] font-semibold tracking-[0.05em] uppercase text-plum-voltage mb-4"
+                className="animate-fade-up text-[11px] sm:text-[13px] font-extrabold tracking-[0.12em] uppercase mb-5 flex flex-col gap-1 text-center md:text-left"
                 style={{ animationDelay: '0s' }}
               >
-                Otimização inteligente de imagens para Google Maps
+                <span className="text-[#ffd200]">Otimização inteligente de imagens</span>
+                <span className="text-emerald-400">especialmente para atrair clientes do Google Maps</span>
               </div>
 
               {/* H1 Headline display splits precisely onto 3 lines */}
@@ -988,13 +1073,13 @@ export default function App() {
                 </span>
               </h1>
 
-              {/* Body message */}
-              <p
-                className="animate-fade-up text-[16px] md:text-[17px] font-medium tracking-[0.025em] leading-[1.55] text-zinc-200 mb-10 text-center md:text-justify"
+              {/* Body message with dynamic neuromarketing typewriter logic */}
+              <div
+                className="animate-fade-up mb-10 text-center md:text-left"
                 style={{ animationDelay: '400ms' }}
               >
-                O FotoSEO é a ferramenta definitiva para colocar qualquer negócio no topo do Google Maps. Sem precisar programar ou saber nada de computação, ele injeta as coordenadas de GPS reais do seu endereço e palavras-chave secretas diretamente nos arquivos das suas fotos. O Google reconhece que a sua foto foi tirada exatamente no seu local de atendimento, validando a relevância do seu perfil e alavancando a sua empresa para a Posição #1 dos mapas em poucos minutos!
-              </p>
+                <HeroTypewriter />
+              </div>
 
               {/* Action columns buttons stack on mobile, inline on desktop */}
               <div
