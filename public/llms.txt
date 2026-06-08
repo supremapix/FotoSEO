@@ -1,0 +1,20 @@
+# FotoSEO - Local Ranking & Image Metadata Geocoding Suite
+
+FotoSEO is a web-based, zero-installation file processing engine designed to inject highly effective local search metadata into image assets. It targets small business owners, local SEO consultants, agency networks, and non-technical entrepreneurs seeking the Top #1 ranking position inside Google Maps and Google Meu Negócio.
+
+## Key Core Benefits
+* **Durable Cloud Persistence**: Zero setup geolocational injections.
+* **Senior-Friendly Interfaces**: Big touch targets, high contrast ratios, linear 3-step walk-throughs, and zero terminal code.
+* **Instant Processing**: Upload image -> Select exact map location on embedded geodecoder or input coordinates -> Download compiled geo-coded, keywords-saturated `.zip` payload.
+* **Unbeatable Neuromarketing Conversion Triggers**: Live scacity tickers, real-time viewer tracking, high-contrast visual comparatives, and robust interactive satisfaction loops.
+
+## Technical Mechanisms
+* **Exif tag injection**: Standard metadata write cycle parameters including primary coordinates `GPSLatitude`, `GPSLongitude`, `GPSLatitudeRef`, `GPSLongitudeRef`, and descriptive search keywords embedded organically inside user images.
+* **Dynamic Geocoding APIs**: Translates simple physical business addresses into absolute mathematical vectors (Latitude and Longitude values) instantly.
+* **Offline-friendly file generation**: Handles batch operations directly using client browser capabilities safely before payload assembly, reducing server lag.
+
+## Funnel Stages
+1. **Landing View**: Main educational pitch, interactive live file optimization area, senior proof testimonials, step-by-step illustrations, and lifetime discount pricing tier.
+2. **Upsell Suite (Accelerator)**: Add-on prompt for premium accelerator assets.
+3. **Downsell Suite**: Last-resort highly discount rescue offer.
+4. **Success View**: Full structural transaction receipts and next steps dashboard.

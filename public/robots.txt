@@ -1,0 +1,9 @@
+# Robots.txt for FotoSEO - Boost crawl rates and indexing
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /dist/
+Disallow: /node_modules/
+
+# Sitemaps
+Sitemap: https://fotoseo.app/sitemap.xml

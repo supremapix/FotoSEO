@@ -651,31 +651,29 @@ export default function App() {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
-  };
-
-  // Static Data lists structure mapping
+  }  // Static Data lists structure mapping
   const stats = [
-    { value: '10×', label: 'Mais pessoas do seu próprio bairro encontrando a sua empresa no mapa e ligando para você.' },
-    { value: '10', label: 'Fotos enviadas de uma única vez, de forma simples e sem qualquer tipo de complicação.' },
-    { value: '100%', label: 'Funciona online e direto pelo seu navegador de internet, sem precisar baixar nenhum aplicativo.' },
-    { value: '3 min', label: 'Apenas 3 minutos do seu dia bastam para que nosso sistema faça tudo sozinho por você.' },
+    { value: '10×', label: 'Mais ligações e rotas traçadas por vizinhos que procuram o seu serviço de perto no bairro.' },
+    { value: '10', label: 'Fotos tratadas em segundos por lote: geolocalização e palavras-chave injetadas duma vez só.' },
+    { value: '100%', label: 'Livre de Instalação: Funciona online e direto pelo seu navegador. Seguro para idosos e iniciantes.' },
+    { value: '3 min', label: 'Tempo médio do envio à pasta otimizada. Sem planilhas ou configurações complexas.' },
   ];
 
   const painPoints = [
     {
       icon: MapPinOff,
-      title: 'Sem GPS nas fotos',
-      desc: 'As fotos tiradas por celulares comuns vêm sem o seu endereço gravado dentro delas. Sem essas informações, o robô do Google Meu Negócio fica confuso e não sabe onde a sua clínica, escritório ou comércio realmente fica.',
+      title: 'Fotos Comuns Sem Coordenadas GPS',
+      desc: 'As fotos tiradas por celulares normais são "cegas" para o robô do Google Meu Negócio. Sem a latitude e longitude invisíveis gravadas no arquivo, o Google não sabe se a foto é real ou falsa, rebaixando seu perfil no ranking.',
     },
     {
       icon: Tag,
-      title: 'Sem tags e palavras-chave',
-      desc: 'Suas imagens normais não informam ao Google o que você vende ou faz. Elas são exibidas como arquivos vazios e invisíveis para novos clientes locais que pesquisam no seu bairro.',
+      title: 'Ausência de Tags Ocultas (IPTC)',
+      desc: 'Suas imagens estão subindo sem palavras-chave registradas no código. O Google lê esses metadados ocultos para decidir quem indicar primeiro para o morador do bairro que pesquisa "perto de mim".',
     },
     {
       icon: FileX,
-      title: 'Nome de arquivo errado',
-      desc: 'Salvar e subir fotos com nomes de fábrica como "IMG_1234.jpg" enterra e esconde o seu perfil. Suas fotos deveriam estar escritas com o nome do seu serviço oficial (exemplo: "pintor-em-curitiba.jpg").',
+      title: 'Nomes de Arquivos Genéricos ("IMG_2391.jpg")',
+      desc: 'Jogar fotos com código de celular nos mapas sepulta sua relevância. Cada arquivo precisa ser renomeado perfeitamente com sua palavra-chave principal + cidade para sinalizar autoridade local instantânea.',
     },
   ];
 
@@ -683,96 +681,96 @@ export default function App() {
     {
       num: '01',
       icon: Upload,
-      title: '1. Selecione as imagens',
-      desc: 'Clique no botão de Enviar ou arraste as fotos de sua empresa. É um processo muito simples, seguro e super rápido de fazer, ideal para qualquer pessoa.',
+      title: '1. Coloque Suas Fotos',
+      desc: 'Clique em Enviar ou simplesmente arraste suas fotos. O sistema funciona instantaneamente, sem preencher cadastros cansativos ou senhas.',
     },
     {
       num: '02',
       icon: MapPin,
-      title: '2. Digite seu Endereço',
-      desc: 'Escreva de forma simples o endereço onde atende. Automaticamente, nosso sistema calcula a localização de satélite necessária e coloca de forma segura dentro das fotos.',
+      title: '2. Insira Seu Endereço de Atendimento',
+      desc: 'Digite de forma simples onde sua empresa fica. Nosso script calcula as coordenadas exatas de satélite e as injeta de forma blindada nas imagens.',
     },
     {
       num: '03',
       icon: Archive,
-      title: '3. Baixe e use gratis',
-      desc: 'Com um clique, você baixa todas as fotos prontas e otimizadas organizadas em uma pasta amigável. Suba as novas fotos ricas em dados no Google para ver os resultados.',
+      title: '3. Baixe a Pasta Otimizada (.zip)',
+      desc: 'Clique uma vez e faça o download dos arquivos perfeitamente renomeados e geo-arranjados. Suba-os no Google e comece a subir no ranking hoje!',
     },
   ];
 
   const features = [
     {
       icon: Navigation,
-      title: 'Localizador GPS por Endereço',
-      desc: 'Digite o endereço de forma simples. O sistema traduz em coordenadas de satélite exatas e insere no arquivo das fotos de forma automática por você.',
+      title: 'Conversor Automático de Endereço em GPS',
+      desc: 'Chega de lidar com números complicados de latitude e longitude. Apenas digite o endereço físico e nosso conversor calcula os milissegundos geográficos na hora.',
     },
     {
       icon: Tags,
-      title: 'Palavras-Chave Fáceis',
-      desc: 'Adicione palavras de busca essenciais (exemplo: "advogado perto de mim" ou "padaria de bairro") que atraem moradores da vizinhança.',
+      title: 'Saturador Inteligente de Palavras-Chave',
+      desc: 'Nós injetamos termos exatos de alta intenção de busca ("melhor", "barato", "perto de mim") direto no DNA das imagens para capturar tráfego regional.',
     },
     {
       icon: FileText,
-      title: 'Descrições Invisíveis que Google deita e rola',
-      desc: 'Insira legendas de texto oculto que o robô do Google lê instantaneamente para comprovar a qualidade do seu perfil para toda a sua região.',
+      title: 'Codificação de Legendas Invisíveis (IPTC)',
+      desc: 'Inserimos descrições detalhadas do seu nicho no fundo dos metadados. O robô do Google consome essa informação prioritariamente no ranking.',
     },
     {
       icon: FolderPen,
-      title: 'Renomeador Inteligente em Massa',
-      desc: 'Nós renomeamos todas as fotos com o seu serviço profissional e sua cidade automaticamente de forma padrão, bonita e muito organizada.',
+      title: 'Renomeador Sequencial Profissional',
+      desc: 'Adeus "IMG_1234.png". Seus arquivos são rebatizados seguindo fórmulas exatas de SEO Local que geram autoridade perante o Google algoritmicamente.',
     },
     {
       icon: Layers,
-      title: 'Metadados de Satélite Puros',
-      desc: 'Garantimos a gravação das coordenadas de localização com alta nitidez, sem diminuir de forma alguma a qualidade original da imagem.',
+      title: 'Preservação de Resolução Máxima',
+      desc: 'Nosso processo de injeção de metadados não compacta nem diminui a nitidez das fotos. Suas imagens continuam lindas, nítidas e profissionais.',
     },
     {
       icon: Package,
-      title: 'Pasta ZIP Prática e Compacta',
-      desc: 'Para simplificar e evitar bagunça, todas as imagens prontas são guardadas juntas em uma única pasta leve que você baixa com apenas um clique.',
+      title: 'Compactador Automático Tudo-Pronto',
+      desc: 'Entregamos seu lote inteiro compilado de forma organizada dentro de um arquivo ZIP leve, facilitando muito o upload no painel do Google.',
     },
     {
       icon: Monitor,
-      title: 'Botões Maiores e Letras Nítidas',
-      desc: 'Uma tela limpa, desenhada com botões grandes, contraste nítido, clareza máxima e texto amigável feito especialmente para quem não entende de programação.',
+      title: 'Interface Anti-Confusão Sem Menu Chato',
+      desc: 'Telas sem poluição visual, projetadas com fontes grandes e campos amigáveis, ideais para donos de negócios locais focados em faturamento rápido.',
     },
     {
       icon: Table,
-      title: 'Tabela de Controle Amigável',
-      desc: 'Para você nunca se perder, uma listinha simples na tela mostra quais fotos já foram otimizadas e o andamento geral da sua rotina.',
+      title: 'Relatório Interno Prático',
+      desc: 'Acompanhe de forma simples o progresso científico de cada imagem, sabendo exatamente quais dados foram georreferenciados no processo.',
     },
     {
       icon: Satellite,
-      title: 'Sinal Verificado e Seguro',
-      desc: 'Garante o envio das coordenadas perfeitas, sem emitir nenhum erro de localização, fazendo com que os servidores do Google aprovem seus dados na hora.',
+      title: 'Sinal Verificado de Longitude Certa',
+      desc: 'Utiliza validadores geográficos modernos para garantir que os servidores de imagem do Google aprovem seus metadados de primeira.',
     },
   ];
 
   const comparisons = [
     {
-      aspect: 'Inclusão de GPS EXIF',
-      without: 'Imagens cruas sem localizador',
-      with: 'Coordenadas convertidas instantaneamente',
+      aspect: 'Gravação de GPS EXIF Terrestre',
+      without: 'Metadados vazios (Google não sabe onde a foto foi tirada)',
+      with: 'Coordenadas de satélite precisas cravadas no código',
     },
     {
-      aspect: 'Processamento de Imagens',
-      without: 'Manual, uma a uma em editores desktop complexos',
-      with: 'Lote simultâneo de até 10 fotos no navegador',
+      aspect: 'Agilidade de Processamento',
+      without: 'Trabalho manual, demorando até 40 minutos por imagem',
+      with: 'Lote completo de até 10 imagens tratado em menos de 180 segundos',
     },
     {
-      aspect: 'Otimização de IPTC & Tags',
-      without: 'Vazio de termos semânticos ocultos',
-      with: 'Keywords de alta indexação injetadas no código',
+      aspect: 'Otimização de Termos Ocultos',
+      without: 'Sem palavras-chave e sem relevância semântica regional',
+      with: 'Keywords inteligentes de alta intenção injetadas no IPTC',
     },
     {
-      aspect: 'Nomenclatura de Arquivos',
-      without: 'Codificações como DSC_2910.jpg sem valor SEO',
-      with: 'Arquivos renomeados com Palavra-Chave + Cidade',
+      aspect: 'Padrão dos Nomes dos Arquivos',
+      without: 'Código aleatório gerado pelo celular ("IMG_0991.HEIC")',
+      with: 'Palavra-chave principal + Cidade de busca do cliente',
     },
     {
-      aspect: 'Tempo por Cliente',
-      without: 'Média de 40 minutos por lote de otimização',
-      with: 'Menos de 3 minutos do upload ao ZIP final',
+      aspect: 'Curva de Aprendizado',
+      without: 'Necessita softwares de edição complexos e caros',
+      with: 'Sem complicações: projetado inclusive para idosos e iniciantes',
     },
   ];
 
@@ -781,25 +779,25 @@ export default function App() {
       name: 'Carlos Eduardo',
       role: 'Especialista em SEO Local',
       rating: 5,
-      text: 'Subi o perfil de uma clínica odontológica para as primeiras posições do Google Maps em menos de duas semanas. O FotoSEO me economiza horas de edição de metadados manual.',
+      text: 'O FotoSEO é indispensável. Consegui posicionar uma clínica médica local na Posição #1 no bairro Jardins em apenas 10 dias. Georreferenciamento de imagens é o maior segredo do Maps.',
     },
     {
       name: 'Vanessa Martins',
-      role: 'Agência VM Studio',
+      role: 'Agência VM Digital',
       rating: 5,
-      text: 'Espetacular! Consigo geolocalizar fotos por endereço e injetar as tags estruturadas em menos de 3 minutos. Meus clientes de comércio local estão adorando os resultados.',
+      text: 'Trabalho com comércio local e me poupou horas. Não preciso mais de editores desktop difíceis de configurar. Digito o endereço do cliente, arrasto as fotos e o Zip sai pronto na hora.',
     },
     {
       name: 'Rodrigo Pinheiro',
-      role: 'Consultor de Tráfego',
+      role: 'Consultor de Tráfego Regional',
       rating: 5,
-      text: 'Impressionante como a geolocalização EXIF faz diferença direta no algoritmo do Google Meu Negócio. Indispensável para quem atende negócios físicos de forma profissional.',
+      text: 'O ganho na relevância do Google Meu Negócio usando metadados EXIF/IPTC limpos e estruturados é absurdo. Ideal para quem presta serviço e quer dominar as buscas locais.',
     },
     {
-      name: 'Juliana Mendes',
-      role: 'Fotógrafa Comercial',
+      name: 'Seu Antônio de Souza',
+      role: 'Dono de Oficina Mecânica (68 anos)',
       rating: 5,
-      text: 'Antes eu tinha que explicar pro cliente porque as fotos não tinham GPS de estúdio. Agora passo tudo no FotoSEO antes de entregar. Nota dez em agilidade e praticidade.',
+      text: 'Não entendo nada de computador e achei que seria muito difícil. Mas o FotoSEO é muito simples! Só coloco minhas fotos, escrevo meu endereço e tudo funciona sozinho. Recomendo muito!',
     },
   ];
 
@@ -1082,7 +1080,7 @@ export default function App() {
                   <h3 className="text-[20px] font-semibold text-white tracking-tight mb-3 text-center md:text-left">
                     {item.title}
                   </h3>
-                  <p className="text-zinc-100 font-medium text-[15px] leading-relaxed text-justify">
+                  <p className="text-zinc-100 font-medium text-[15px] leading-relaxed text-center md:text-left md:text-justify">
                     {item.desc}
                   </p>
                 </ScrollReveal>
@@ -1117,7 +1115,7 @@ export default function App() {
                 >
                   {/* Number shadow elements */}
                   <div className="absolute top-6 right-8 text-[72px] font-bold leading-none text-white/[0.03] select-none">
-                    {item.num}
+                     {item.num}
                   </div>
 
                   {/* Large, clear icon for elderly users */}
@@ -1128,7 +1126,7 @@ export default function App() {
                   <h3 className="text-[20px] font-semibold text-white tracking-tight mb-3 text-center md:text-left">
                     {item.title}
                   </h3>
-                  <p className="text-zinc-100 font-medium text-[15px] leading-relaxed text-justify">
+                  <p className="text-zinc-100 font-medium text-[15px] leading-relaxed text-center md:text-left md:text-justify">
                     {item.desc}
                   </p>
 
@@ -1171,7 +1169,7 @@ export default function App() {
                   <h3 className="text-[18px] font-semibold text-white tracking-tight mb-2 text-center md:text-left">
                     {item.title}
                   </h3>
-                  <p className="text-zinc-100 font-medium text-[14px] leading-relaxed text-justify">
+                  <p className="text-zinc-100 font-medium text-[14px] leading-relaxed text-center md:text-left md:text-justify">
                     {item.desc}
                   </p>
 
