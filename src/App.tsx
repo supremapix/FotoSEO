@@ -192,9 +192,11 @@ interface ScrollRevealProps {
   className?: string;
   delay?: number;
   key?: React.Key;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
-function ScrollReveal({ children, className = '', delay = 0 }: ScrollRevealProps) {
+function ScrollReveal({ children, className = '', delay = 0, onMouseEnter, onMouseLeave }: ScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [isRevealed, setIsRevealed] = useState(false);
 
@@ -225,6 +227,8 @@ function ScrollReveal({ children, className = '', delay = 0 }: ScrollRevealProps
       ref={ref}
       style={{ transitionDelay: `${delay}ms` }}
       className={`reveal-item ${isRevealed ? 'revealed' : ''} ${className}`}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       {children}
     </div>
@@ -630,6 +634,75 @@ function InteractiveLogo({ size = 'sm', className = '' }: InteractiveLogoProps) 
         />
       </div>
     </div>
+  );
+}
+
+// ==========================================
+// GLOWING CARD WRAPPER WITH LOGO BORDER EFFECT
+// ==========================================
+interface GlowCardProps {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+  innerClassName?: string;
+  glowColorActive?: boolean;
+  noScrollReveal?: boolean;
+  key?: React.Key;
+}
+
+function GlowCard({ children, className = '', delay = 0, innerClassName = '', glowColorActive = true, noScrollReveal = false }: GlowCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const cardContent = (
+    <>
+      {/* Background spin visual matching the logo */}
+      <div
+        className={`absolute inset-[-150%] rounded-[24px] pointer-events-none transition-all duration-300 ${
+          glowColorActive
+            ? 'bg-[conic-gradient(from_0deg,transparent_20%,#ffd200_40%,transparent_60%,emerald-400_80%,transparent_100%)]'
+            : 'bg-[conic-gradient(from_0deg,transparent_20%,#ef4444_40%,transparent_60%,#f87171_80%,transparent_100%)]'
+        } ${
+          isHovered ? 'animate-[spin_3s_linear_infinite]' : 'animate-[spin_7.5s_linear_infinite]'
+        }`}
+      />
+      {/* Inner offset background to keep the solid card look */}
+      <div className={`relative w-full h-full bg-[#000000] rounded-[23px] overflow-hidden ${innerClassName}`}>
+        {/* Subtle grid pattern background or top gradient glow */}
+        <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
+        {children}
+      </div>
+    </>
+  );
+
+  if (noScrollReveal) {
+    return (
+      <div
+        className={`group relative rounded-[24px] p-[1.5px] transition-all duration-500 overflow-hidden ${
+          isHovered
+            ? 'shadow-[0_0_35px_rgba(255,210,0,0.18)] scale-[1.025] -translate-y-1.5'
+            : 'shadow-lg hover:scale-[1.025]'
+        } ${className}`}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        {cardContent}
+      </div>
+    );
+  }
+
+  return (
+    <ScrollReveal
+      delay={delay}
+      className={`group relative rounded-[24px] p-[1.5px] transition-all duration-500 overflow-hidden ${
+        isHovered
+          ? 'shadow-[0_0_35px_rgba(255,210,0,0.18)] scale-[1.025] -translate-y-1.5'
+          : 'shadow-lg hover:scale-[1.025]'
+      } ${className}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {cardContent}
+    </ScrollReveal>
   );
 }
 
@@ -1312,10 +1385,11 @@ export default function App() {
             {painPoints.map((item, idx) => {
               const IconComponent = item.icon;
               return (
-                <ScrollReveal
+                <GlowCard
                   key={idx}
                   delay={idx * 150}
-                  className="group relative rounded-[24px] border border-red-500/15 bg-[#000000] p-8 hover:border-red-500/30 transition-all duration-300 transform"
+                  glowColorActive={false}
+                  innerClassName="p-8 flex flex-col h-full justify-start"
                 >
                   {/* Large, clear icon for elderly users */}
                   <div className="w-18 h-18 rounded-[24px] border border-red-500/25 bg-red-955/15 flex items-center justify-center mb-6 mx-auto md:mx-0 transition-all duration-300 group-hover:scale-105">
@@ -1327,7 +1401,7 @@ export default function App() {
                   <p className="text-zinc-100 font-medium text-[15px] leading-relaxed text-center md:text-left md:text-justify">
                     {item.desc}
                   </p>
-                </ScrollReveal>
+                </GlowCard>
               );
             })}
           </div>
@@ -1352,10 +1426,10 @@ export default function App() {
             {steps.map((item, idx) => {
               const IconComponent = item.icon;
               return (
-                <ScrollReveal
+                <GlowCard
                   key={idx}
                   delay={idx * 150}
-                  className="group relative rounded-[24px] border border-white/8 bg-[#000000] p-8 hover:border-plum-voltage/40 hover:-translate-y-2.5 transition-all duration-300"
+                  innerClassName="p-8 flex flex-col h-full justify-start relative text-left"
                 >
                   {/* Number shadow elements */}
                   <div className="absolute top-6 right-8 text-[72px] font-bold leading-none text-white/[0.03] select-none">
@@ -1363,7 +1437,7 @@ export default function App() {
                   </div>
 
                   {/* Large, clear icon for elderly users */}
-                  <div className="w-18 h-18 rounded-[24px] border border-plum-voltage/30 bg-plum-voltage/10 flex items-center justify-center mb-8 mx-auto md:mx-0 transition-all duration-300 group-hover:scale-105">
+                  <div className="w-18 h-18 rounded-[24px] border border-plum-voltage/30 bg-plum-voltage/10 flex items-center justify-center mb-8 mx-auto md:mx-0 transition-all duration-300 group-hover:scale-105 animate-pulse">
                     <IconComponent className="w-8 h-8 text-plum-voltage" />
                   </div>
 
@@ -1373,10 +1447,7 @@ export default function App() {
                   <p className="text-zinc-100 font-medium text-[15px] leading-relaxed text-center md:text-left md:text-justify">
                     {item.desc}
                   </p>
-
-                  {/* bottom accent border hover line animation */}
-                  <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-plum-voltage rounded-b-[24px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </ScrollReveal>
+                </GlowCard>
               );
             })}
           </div>
@@ -1400,10 +1471,10 @@ export default function App() {
             {features.map((item, idx) => {
               const IconComponent = item.icon;
               return (
-                <ScrollReveal
+                <GlowCard
                   key={idx}
                   delay={(idx % 3) * 100}
-                  className="group relative rounded-[24px] border border-white/8 bg-[#000000] p-8 hover:border-plum-voltage/40 hover:-translate-y-2.5 transition-all duration-300"
+                  innerClassName="p-8 flex flex-col h-full justify-start text-left"
                 >
                   {/* Large, clear icon for elderly users */}
                   <div className="w-18 h-18 rounded-[24px] border border-lichen/35 bg-lichen/10 flex items-center justify-center mb-6 mx-auto md:mx-0 transition-all duration-300 group-hover:scale-105">
@@ -1416,9 +1487,7 @@ export default function App() {
                   <p className="text-zinc-100 font-medium text-[14px] leading-relaxed text-center md:text-left md:text-justify">
                     {item.desc}
                   </p>
-
-                  <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-plum-voltage rounded-b-[24px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </ScrollReveal>
+                </GlowCard>
               );
             })}
           </div>
@@ -1511,9 +1580,11 @@ export default function App() {
 
           <div className="animate-marquee-infinite flex gap-6">
             {[...testimonials, ...testimonials].map((card, idx) => (
-              <div
+              <GlowCard
                 key={idx}
-                className="w-[320px] md:w-[380px] shrink-0 rounded-[24px] border border-white/8 bg-[#000000] p-8 flex flex-col justify-between"
+                noScrollReveal={true}
+                className="w-[320px] md:w-[380px] shrink-0 pointer-events-auto"
+                innerClassName="p-8 flex flex-col justify-between h-full text-left"
               >
                 <div>
                   {/* Rating Stars row strictly with Lucide stars */}
@@ -1531,7 +1602,7 @@ export default function App() {
                   <span className="text-white font-bold text-[15px]">{card.name}</span>
                   <span className="text-white/70 font-medium text-[13px]">{card.role}</span>
                 </div>
-              </div>
+              </GlowCard>
             ))}
           </div>
         </div>
@@ -1553,9 +1624,9 @@ export default function App() {
 
           {/* Pricing wrapper cards limits */}
           <div className="max-w-[480px] mx-auto">
-            <ScrollReveal className="rounded-[24px] border border-plum-voltage/45 bg-[#000000] p-8 md:p-10 relative flex flex-col items-stretch overflow-hidden">
+            <GlowCard innerClassName="p-8 md:p-10 relative flex flex-col items-stretch overflow-hidden text-left" delay={100}>
               {/* Launcher accent label badge */}
-              <div className="absolute top-4 right-4 rounded-full border border-amber-spark/30 px-3.5 py-1 text-[10px] font-semibold tracking-wide uppercase text-amber-spark">
+              <div className="absolute top-4 right-4 rounded-full border border-amber-spark/30 px-3.5 py-1 text-[10px] font-semibold tracking-wide uppercase text-amber-spark bg-black/50 z-10">
                 Oferta de Lançamento
               </div>
 
@@ -1602,7 +1673,7 @@ export default function App() {
                 <ShieldCheck className="w-4 h-4 text-lichen" />
                 <span>Garantia incondicional de 7 dias com reembolso integral</span>
               </div>
-            </ScrollReveal>
+            </GlowCard>
           </div>
         </div>
       </section>
@@ -1740,7 +1811,7 @@ export default function App() {
               
               {/* Left Column Checklist details card */}
               <div className="lg:col-span-7 space-y-6">
-                <div className="p-6 md:p-8 rounded-[24px] border border-white/7 bg-[#000000] space-y-6">
+                <GlowCard innerClassName="p-6 md:p-8 space-y-6" noScrollReveal={true}>
                   <h3 className="text-[18px] font-semibold text-white tracking-tight flex flex-col md:flex-row items-center md:items-start gap-2 text-center md:text-left">
                     <Sparkles className="w-4.5 h-4.5 text-plum-voltage" />
                     O que você recebe imediatamente ao ativar o Upgrade Pro:
@@ -1769,7 +1840,7 @@ export default function App() {
                         val: 'R$ 97',
                       },
                     ].map((item, idx) => (
-                      <div key={idx} className="flex gap-4 items-start">
+                      <div key={idx} className="flex gap-4 items-start text-left">
                         <div className="w-6 h-6 rounded-full bg-[#15846e]/10 border border-[#15846e]/20 flex items-center justify-center shrink-0 mt-0.5">
                           <Check className="w-3.5 h-3.5 text-[#15846e]" />
                         </div>
@@ -1788,7 +1859,7 @@ export default function App() {
                     <span>Preço total se comprado separadamente:</span>
                     <span className="font-bold text-white/80 line-through">R$ 638,00</span>
                   </div>
-                </div>
+                </GlowCard>
 
                 {/* Triple Guarantee Labels */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -1811,7 +1882,7 @@ export default function App() {
               </div>
 
               {/* Right Column Interactive simulation terminal panel */}
-              <div className="lg:col-span-5 bg-black border border-white/8 rounded-[24px] p-6 lg:p-8 relative overflow-hidden self-stretch flex flex-col justify-between space-y-8">
+              <GlowCard className="lg:col-span-5 self-stretch" innerClassName="p-6 lg:p-8 relative overflow-hidden flex flex-col justify-between space-y-8 h-full" noScrollReveal={true}>
                 <div className="absolute top-0 right-0 w-36 h-36 bg-plum-voltage/8 blur-[65px] rounded-full pointer-events-none" />
 
                 <div>
@@ -1825,7 +1896,7 @@ export default function App() {
                     </span>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-4 text-left">
                     {/* Simulated Ranking Item */}
                     <div className="p-4 bg-white/[0.02] border border-white/5 rounded-[24px]">
                       <div className="flex items-center justify-between gap-3 mb-2">
@@ -1846,7 +1917,7 @@ export default function App() {
 
                     {/* Interactive GMB Copy Generator Console demo */}
                     <div className="p-4 bg-white/[0.02] border border-white/5 rounded-[24px] space-y-3">
-                      <span className="text-[11px] uppercase tracking-wider font-bold text-plum-voltage block">
+                      <span className="text-[11px] uppercase tracking-wider font-bold text-plum-voltage block text-left">
                         IA GMB Copywriter Engine
                       </span>
                       <div className="bg-black p-3 rounded-[24px] border border-white/5 font-mono text-[11px] text-white/90 leading-relaxed font-semibold">
@@ -1860,7 +1931,7 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="border-t border-white/5 pt-6">
+                <div className="border-t border-white/5 pt-6 text-left">
                   {/* Rating block */}
                   <div className="flex gap-1 items-center mb-2">
                     {[1, 2, 3, 4, 5].map((item) => (
@@ -1874,7 +1945,7 @@ export default function App() {
                     — Douglas G., Consultor de Tráfego Local
                   </span>
                 </div>
-              </div>
+              </GlowCard>
             </div>
 
             {/* Checkout Action Zone */}
@@ -1965,7 +2036,7 @@ export default function App() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-20">
               {/* Left Column Checklist details card */}
               <div className="lg:col-span-8 space-y-6">
-                <div className="p-6 md:p-8 rounded-[24px] border border-white/7 bg-[#000000] space-y-6">
+                <GlowCard innerClassName="p-6 md:p-8 space-y-6" noScrollReveal={true}>
                   <h3 className="text-[18px] font-bold text-white tracking-tight flex flex-col md:flex-row items-center md:items-start gap-2 text-center md:text-left">
                     <Sparkles className="w-4.5 h-4.5 text-[#ffd200]" />
                     Tudo Incluído no Seu Pacote Especial de R$ 27:
@@ -1986,7 +2057,7 @@ export default function App() {
                         desc: 'Os roteiros, modelos prontos e o funil de abordagem definitivo para captar clientes que precisam de SEO.',
                       },
                     ].map((item, idx) => (
-                      <div key={idx} className="flex gap-4 items-start">
+                      <div key={idx} className="flex gap-4 items-start text-left">
                         <div className="w-6 h-6 rounded-full bg-[#15846e]/10 border border-[#15846e]/20 flex items-center justify-center shrink-0 mt-0.5">
                           <Check className="w-3.5 h-3.5 text-lichen" />
                         </div>
@@ -1997,11 +2068,11 @@ export default function App() {
                       </div>
                     ))}
                   </div>
-                </div>
+                </GlowCard>
               </div>
 
               {/* Right Column Value Card */}
-              <div className="lg:col-span-4 p-8 border border-[#ffb829]/20 bg-[#000000] rounded-[24px] text-center flex flex-col justify-between h-full">
+              <GlowCard className="lg:col-span-4 h-full" innerClassName="p-8 text-center flex flex-col justify-between h-full" noScrollReveal={true}>
                 <div>
                   <span className="text-[10px] font-semibold tracking-wide uppercase text-[#ffb829] block mb-3">
                     APENAS NESTA TELA
@@ -2036,7 +2107,7 @@ export default function App() {
                     NÃO, DEIXAR O ACESSO PRO DE LADO
                   </button>
                 </div>
-              </div>
+              </GlowCard>
             </div>
           </div>
         </div>
@@ -2188,73 +2259,155 @@ export default function App() {
 
 
       {/* FOOTER */}
-      <footer className="bg-black py-12 border-t border-white/8 relative">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col items-center justify-between gap-6">
-          <div className="w-full flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-[24px] border border-plum-voltage flex items-center justify-center">
-                <Camera className="w-4 h-4 text-white" />
+      <footer className="bg-[#030303] pt-16 pb-12 border-t border-white/10 relative overflow-hidden z-10 font-[Inter]">
+        {/* Ambient light glow behind footer */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-px bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent" />
+        <div className="absolute top-12 left-1/4 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-4 right-1/4 w-80 h-80 bg-[#ffd200]/5 rounded-full blur-[100px] pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 md:gap-8 lg:gap-12 pb-12 border-b border-white/5">
+            
+            {/* Column 1: Brand Info (4 cols) */}
+            <div className="lg:col-span-4 flex flex-col items-center md:items-start text-center md:text-left gap-4">
+              <div className="flex items-center gap-3">
+                <InteractiveLogo size="sm" />
+                <span className="text-white text-xl font-bold tracking-tight">FotoSEO</span>
               </div>
-              <span className="text-white text-md font-bold tracking-tight">FotoSEO</span>
+              <p className="text-zinc-400 text-[13px] sm:text-[14px] leading-relaxed font-semibold max-w-[320px]">
+                A ferramenta mais avançada do Brasil para injeção de metadados geográficos, coordenadas GPS IPTC/EXIF e otimização de imagens para o Google Maps.
+              </p>
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 rounded-full border border-white/10 text-[10px] font-bold uppercase tracking-wider text-emerald-400 mt-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                Injetor de metadados ativo
+              </div>
             </div>
 
-            <div className="text-white text-[13px] font-bold flex flex-col md:flex-row items-center gap-2 md:gap-4">
+            {/* Column 2: Links Principais (2.5 cols) */}
+            <div className="lg:col-span-2.5 flex flex-col items-center md:items-start text-center md:text-left">
+              <h4 className="text-white text-[12px] font-extrabold uppercase tracking-widest mb-4 text-emerald-400">
+                Navegação
+              </h4>
+              <ul className="space-y-3">
+                <li>
+                  <a 
+                    href="https://www.supremamidia.com.br" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-zinc-300 hover:text-[#ffd200] text-[13px] font-bold transition-all flex items-center gap-1 justify-center md:justify-start"
+                  >
+                    Site do Produtor <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500" />
+                  </a>
+                </li>
+                <li>
+                  <a 
+                    href="https://fotoseo.shop" 
+                    className="text-zinc-300 hover:text-[#ffd200] text-[13px] font-bold transition-all"
+                  >
+                    Canônica
+                  </a>
+                </li>
+                <li>
+                  <a 
+                    href="https://bio.supremamidia.com.br" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-zinc-300 hover:text-[#ffd200] text-[13px] font-bold transition-all flex items-center gap-1 justify-center md:justify-start"
+                  >
+                    Suprema Mídia <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500" />
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 3: Legal & Termos (2.5 cols) */}
+            <div className="lg:col-span-2.5 flex flex-col items-center md:items-start text-center md:text-left">
+              <h4 className="text-white text-[12px] font-extrabold uppercase tracking-widest mb-4 text-[#ffd200]">
+                Informações Legais
+              </h4>
+              <ul className="space-y-3">
+                <li>
+                  <button 
+                    onClick={() => alert('Termos de Uso:\n\n1. O FotoSEO é um injetor de metadados locais de imagens para SEO.\n2. O uso do software é de responsabilidade exclusiva do usuário.\n3. Respeitamos todas as diretrizes de segurança e privacidade.')}
+                    className="text-zinc-300 hover:text-[#ffd200] text-[13px] font-bold transition-colors cursor-pointer"
+                  >
+                    Termos de Uso
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => alert('Política de Privacidade:\n\n1. Seus dados de navegação são protegidos de ponta a ponta.\n2. Não rastreamos ou compartilhamos dados de localização pessoal com terceiros.')}
+                    className="text-zinc-300 hover:text-[#ffd200] text-[13px] font-bold transition-colors cursor-pointer"
+                  >
+                    Política de Privacidade
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => alert('Suporte:\n\nPrecisa de ajuda? Fale com nosso time em suporte@supremamidia.com.br ou através de nossa página de consultores cadastrados.')}
+                    className="text-zinc-300 hover:text-[#ffd200] text-[13px] font-bold transition-colors cursor-pointer"
+                  >
+                    Suporte Técnico
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 4: Páginas de Fluxo (3 cols) */}
+            <div className="lg:col-span-3 flex flex-col items-center md:items-start text-center md:text-left">
+              <h4 className="text-white text-[12px] font-extrabold uppercase tracking-widest mb-4 text-plum-voltage">
+                Funil de Alta Conversão
+              </h4>
+              <p className="text-zinc-500 text-[12px] font-medium leading-relaxed mb-4 max-w-[240px]">
+                Modos especiais de oferta unificada e estratégias de upsell para multiplicadores de faturamento.
+              </p>
+              <div className="flex flex-col gap-2.5 w-full max-w-[220px]">
+                <button 
+                  onClick={() => {
+                    setCurrentView('upsell');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }} 
+                  className="w-full py-2 bg-white/5 hover:bg-[#ffd200]/10 border border-white/10 hover:border-[#ffd200]/30 text-white hover:text-[#ffd200] text-[11px] font-extrabold uppercase tracking-wider rounded-lg transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  FSEO_UPSELL_PAGE <Sparkles className="w-3 h-3 text-[#ffd200]" />
+                </button>
+                <button 
+                  onClick={() => {
+                    setCurrentView('downsell');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }} 
+                  className="w-full py-2 bg-white/5 hover:bg-emerald-400/10 border border-white/10 hover:border-emerald-400/30 text-white hover:text-emerald-400 text-[11px] font-extrabold uppercase tracking-wider rounded-lg transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  FSEO_DOWNSELL_PAGE <Check className="w-3 h-3 text-emerald-400" />
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Bottom Copyright and Security Bar */}
+          <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-6 text-[12px] font-mono text-zinc-500">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-center sm:text-left font-bold">
               <span>&copy; {new Date().getFullYear()} FotoSEO. Todos os direitos reservados.</span>
-              <span className="hidden md:inline text-white/30">|</span>
+              <span className="hidden sm:inline text-white/10">|</span>
               <span>
-                Desenvolvido por{' '}
+                Desenvolvido com excelência por{' '}
                 <a 
                   href="https://bio.supremamidia.com.br" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="text-plum-voltage hover:underline font-bold"
+                  className="text-plum-voltage hover:underline font-extrabold"
                 >
                   Suprema Mídia
                 </a>
               </span>
             </div>
-
-            <div className="flex flex-wrap items-center justify-center gap-6">
-              <a href="https://www.supremamidia.com.br" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#ffd200] text-[13px] transition-colors font-bold">
-                Site do Produtor
-              </a>
-              <span className="text-white/30">|</span>
-              <a href="https://fotoseo.shop" className="text-white hover:text-[#ffd200] text-[13px] transition-colors font-bold">
-                Canônica
-              </a>
-              <span className="text-white/30">|</span>
-              <span className="text-white text-[13px] font-bold">Termos de Uso</span>
-              <span className="text-white/30">|</span>
-              <span className="text-white text-[13px] font-bold">Política de Privacidade</span>
-              <span className="text-white/30">|</span>
-              <span className="text-white text-[13px] font-bold">Suporte</span>
+            
+            <div className="flex items-center gap-4 text-center justify-center font-bold">
+              <span className="text-[10px] tracking-wider text-zinc-600">
+                FOTOSEO® COCONUT MULTI-STAGE MARKETING ENGINE
+              </span>
             </div>
-          </div>
-
-          {/* Small secret links to upsell and downsell */}
-          <div className="flex flex-wrap items-center justify-between gap-4 text-[10px] text-white/40 border-t border-white/5 pt-6 w-full mt-4 font-bold">
-            <div className="flex gap-4">
-              <button 
-                onClick={() => {
-                  setCurrentView('upsell');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }} 
-                className="hover:text-[#ffd200] transition-colors cursor-pointer text-[10px] font-bold"
-              >
-                FSEO_UPSELL_PAGE
-              </button>
-              <span className="text-white/10">|</span>
-              <button 
-                onClick={() => {
-                  setCurrentView('downsell');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }} 
-                className="hover:text-[#ffd200] transition-colors cursor-pointer text-[10px] font-bold"
-              >
-                FSEO_DOWNSELL_PAGE
-              </button>
-            </div>
-            <span>FOTOSEO® SISTEMA DE ALTÍSSIMA CONVERSÃO UNIFICADA</span>
           </div>
         </div>
       </footer>
