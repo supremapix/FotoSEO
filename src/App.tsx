@@ -1277,6 +1277,140 @@ export default function App() {
         </div>
       </section>
 
+      {/* VÍDEO DESTACADO 9:16 - COMO FUNCIONA O FOTOSEO (ALTA CONVERSÃO) */}
+      <section
+        id="funcionamento-video"
+        className="bg-[#050505] py-20 border-t border-[#ffd200]/10 border-b border-white/5 relative overflow-hidden z-10"
+      >
+        {/* Glowing backgrounds */}
+        <div className="absolute top-1/4 left-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute bottom-1/4 right-10 w-[300px] h-[300px] bg-[#ffd200]/5 rounded-full blur-[100px] pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+            
+            {/* LADO ESQUERDO: SMARTPHONE MOCKUP 9:16 (ATENÇÃO TOTAL DO USUÁRIO) */}
+            <div className="lg:col-span-12 xl:col-span-5 flex flex-col items-center justify-center relative">
+              {/* Floating micro indicators (neuromarketing trigger) */}
+              <div className="absolute -top-6 -left-3 sm:-left-6 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-extrabold text-[10px] sm:text-[11px] tracking-widest uppercase px-3 py-1.5 rounded-full shadow-lg border border-emerald-400/30 flex items-center gap-1.5 animate-bounce z-20">
+                <span className="w-2 h-2 rounded-full bg-white animate-ping" />
+                <span>Passo a Passo Prático</span>
+              </div>
+
+              <div className="absolute -bottom-6 -right-3 sm:-right-6 bg-gradient-to-r from-[#ffd200] to-amber-500 text-black font-extrabold text-[10px] sm:text-[11px] tracking-widest uppercase px-3 py-1.5 rounded-full shadow-lg border border-[#ffd200]/30 flex items-center gap-1.5 animate-pulse z-20">
+                <span>⚡ PLAY PARA ASSISTIR</span>
+              </div>
+
+              {/* High Fidelity Mobile Shell with Logo Effect Glow */}
+              <div className="relative group w-[280px] sm:w-[310px] aspect-[9/16] bg-black rounded-[42px] p-[2.5px] transition-all duration-500 hover:scale-[1.03] shadow-[0_0_50px_rgba(255,210,0,0.15)] hover:shadow-[0_0_80px_rgba(255,210,0,0.3)] border-[8px] border-zinc-900 overflow-hidden">
+                {/* Dynamic Charging Border LED Line */}
+                <div className="absolute inset-0 rounded-[34px] border border-white/10 pointer-events-none z-20" />
+                
+                {/* Smartphone Island Notch */}
+                <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-28 h-5 bg-zinc-900 rounded-full z-30 flex items-center justify-center">
+                  <div className="w-10 h-1 bg-black rounded-full mr-2" />
+                  <div className="w-2 h-2 bg-zinc-950 rounded-full border border-zinc-800" />
+                </div>
+
+                {/* Reflection Screen Layer */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.03] to-white/0 pointer-events-none z-20" />
+
+                {/* Inner Video frame */}
+                <div className="relative w-full h-full rounded-[32px] overflow-hidden bg-[#090909] z-10">
+                  <iframe
+                    src="https://www.youtube.com/embed/8NJ1GPAyOg0?autoplay=1&mute=1&loop=1&playlist=8NJ1GPAyOg0&controls=1&modestbranding=1&rel=0&iv_load_policy=3"
+                    title="Como Funciona o FotoSEO"
+                    className="w-full h-full object-cover rounded-[32px]"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+              </div>
+
+              {/* Laser Halo backline animation */}
+              <div className="absolute inset-0 max-w-[320px] aspect-[9/16] -m-4 border border-[#ffd200]/25 rounded-[48px] animate-pulse pointer-events-none -z-10 bg-radial-gradient(ellipse_at_center,rgba(255,210,0,0.03)_0%,transparent_70%)" />
+            </div>
+
+            {/* LADO DIREITO: TEXTO EXPLICATIVO COM META DESCRIÇÃO E DETALHES DE ALTA CONVERSÃO */}
+            <div className="lg:col-span-12 xl:col-span-7 flex flex-col justify-center space-y-6 text-center lg:text-left max-w-2xl mx-auto xl:mx-0">
+              <ScrollReveal delay={100}>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#ffd200]/10 border border-[#ffd200]/20 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-[#ffd200] mb-4">
+                  🎥 DEMONSTRAÇÃO COMPLETA
+                </span>
+                <h2 className="text-white font-[800] leading-[1.1] tracking-[-0.03em] text-[28px] sm:text-[38px] lg:text-[46px] uppercase text-center lg:text-left">
+                  COMO O <span className="text-emerald-400">FotoSEO</span> FUNCIONA NA PRÁTICA?
+                </h2>
+                <p className="text-zinc-400 mt-4 text-[14px] sm:text-[16px] leading-relaxed font-semibold">
+                  O Google Maps posiciona melhor as empresas que comprovam relevância local através de fotos geotagged. No vídeo ao lado, você verá exatamente como o FotoSEO injeta as coordenadas de GPS oficiais, palavras-chave e metadados estruturados direto nos seus arquivos de imagem para acelerar suas posições no Maps sem segredos.
+                </p>
+              </ScrollReveal>
+
+              {/* Steps/Features with Glow Cards effect */}
+              <div className="grid grid-cols-1 gap-4 pt-2">
+                <ScrollReveal delay={200} className="flex gap-4 p-5 rounded-[20px] border border-white/5 bg-black/60 backdrop-blur-md items-start text-left hover:border-emerald-500/20 transition-all duration-300">
+                  <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                    <MapPin className="w-5 h-5 text-emerald-400 animate-pulse" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-[15px] uppercase tracking-wide">
+                      Injetor EXIF & Coordenadas GPS Reais
+                    </h4>
+                    <p className="text-zinc-400 text-[13px] sm:text-[14px] mt-1 leading-relaxed">
+                      Defina a latitude e longitude exatas correspondentes ao endereço cadastrado no seu perfil do Google Maps (GMB) de forma 100% nativa.
+                    </p>
+                  </div>
+                </ScrollReveal>
+
+                <ScrollReveal delay={300} className="flex gap-4 p-5 rounded-[20px] border border-white/5 bg-black/60 backdrop-blur-md items-start text-left hover:border-[#ffd200]/20 transition-all duration-300">
+                  <div className="w-10 h-10 rounded-full bg-[#ffd200]/10 border border-[#ffd200]/20 flex items-center justify-center shrink-0 mt-0.5">
+                    <Tags className="w-5 h-5 text-[#ffd200]" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-[15px] uppercase tracking-wide">
+                      Metadados IPTC de Serviços & FAQ
+                    </h4>
+                    <p className="text-zinc-400 text-[13px] sm:text-[14px] mt-1 leading-relaxed">
+                      Codifique tags de palavras-chave, categorias e textos de relevância local de forma invisível aos concorrentes, porém mapeadas com perfeição pelos rastreadores do Google.
+                    </p>
+                  </div>
+                </ScrollReveal>
+
+                <ScrollReveal delay={400} className="flex gap-4 p-5 rounded-[20px] border border-white/5 bg-black/60 backdrop-blur-md items-start text-left hover:border-purple-500/20 transition-all duration-300">
+                  <div className="w-10 h-10 rounded-full bg-purple-500/10 border border-purple-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                    <Check className="w-5 h-5 text-purple-400" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-[15px] uppercase tracking-wide">
+                      Sem Perda de Qualidade ou Compressão Destrutiva
+                    </h4>
+                    <p className="text-zinc-400 text-[13px] sm:text-[14px] mt-1 leading-relaxed">
+                      Sua imagem é codificada sem qualquer perda de qualidade ou compressão, garantindo que o Google indexe o arquivo com a resolução e integridade máximas.
+                    </p>
+                  </div>
+                </ScrollReveal>
+              </div>
+
+              {/* Mini visual summary banner */}
+              <div className="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/15 flex flex-col sm:flex-row items-center justify-between gap-4 text-[12px] font-mono text-emerald-400/90 text-left">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                  <span>Metadados EXIF/IPTC estruturados de alta precisão prontos para indexação imediata.</span>
+                </div>
+                <div className="font-bold text-[#ffd200]">{`{ geo_lat_lon: true, schema_tags: "injected" }`}</div>
+              </div>
+
+              <div className="pt-2 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <RippleButton className="py-[16px] px-8 text-[13px] uppercase tracking-wider font-extrabold" onClick={triggerPurchase}>
+                  COMEÇAR AGORA POR APENAS R$ 27 <ArrowRight className="w-4 h-4 ml-1.5" />
+                </RippleButton>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       {/* IMAGEM EM DESTAQUE EXPLICATIVA - ANTES E DEPOIS (PROVA VISUAL DE ALTA CONVERSÃO) */}
       <section className="bg-[#030303] py-12 sm:py-16 border-t border-b border-white/5 relative overflow-hidden z-10">
         <div className="max-w-5xl mx-auto px-6">
